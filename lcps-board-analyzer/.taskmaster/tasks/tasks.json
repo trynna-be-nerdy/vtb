@@ -1,0 +1,186 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Project setup: Docker Compose, environment config, and local services",
+        "description": "Bootstrap the entire local development environment so all subsequent tasks have working infrastructure to build against.",
+        "details": "1. Ensure `.env` exists (copy from `.env.example`) and fill in DATABASE_URL, REDIS_URL, OLLAMA_BASE_URL\n2. Verify `docker-compose.yml` defines all 4 services: postgres (port 5432), redis (port 6379), api (port 8000), pipeline worker\n3. Run `docker compose up postgres redis` to start infrastructure services only\n4. Confirm PostgreSQL is reachable: `psql postgresql://lcps:lcps_dev@localhost:5432/lcps_analyzer -c 'SELECT 1'`\n5. Confirm Redis is reachable: `redis-cli ping`\n6. Pull Gemma 4 model: `ollama pull gemma4:4b` and verify with `ollama list`\n7. Create Python virtual environment in `backend/`: `python -m venv .venv && source .venv/bin/activate`\n8. Install backend dependencies: `pip install -r requirements.txt`\n9. Verify FastAPI starts: `uvicorn app.main:app --reload` shows no import errors",
+        "testStrategy": "All 3 services (postgres, redis, ollama) respond to health checks. FastAPI starts without errors and GET / returns JSON. `ollama list` shows gemma4:4b.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [],
+        "updatedAt": "2026-05-09T20:00:00.000Z"
+      },
+      {
+        "id": "2",
+        "title": "Database schema: SQLAlchemy models and Alembic migrations",
+        "description": "Define all 6 ORM models and run Alembic migrations to create the schema in PostgreSQL, including the full-text search trigger on agenda_items.",
+        "details": "1. Verify all 6 models exist in `backend/app/models/`: Source, SeenDocument, Meeting, AgendaItem, SupportingDocument, PipelineRun\n2. Confirm `AgendaItem` has the `search_vector` TSVECTOR column with a GIN index\n3. Run `alembic revision --autogenerate -m 'initial_schema'` from `backend/`\n4. Open the generated migration file and add the PostgreSQL full-text search trigger:\n   ```sql\n   CREATE OR REPLACE FUNCTION update_search_vector() RETURNS trigger AS $$\n   BEGIN\n     NEW.search_vector := to_tsvector('english',\n       coalesce(NEW.title, '') || ' ' ||\n       coalesce(NEW.summary, '') || ' ' ||\n       coalesce(array_to_string(NEW.decisions, ' '), ''));\n     RETURN NEW;\n   END;\n   $$ LANGUAGE plpgsql;\n\n   CREATE TRIGGER agenda_items_search_vector_update\n     BEFORE INSERT OR UPDATE ON agenda_items\n     FOR EACH ROW EXECUTE FUNCTION update_search_vector();\n   ```\n5. Run `alembic upgrade head`\n6. Seed the `sources` table with two rows:\n   - LCPS: name='LCPS Board', url='https://go.boarddocs.com/vsba/loudoun/Board.nsf/Public', source_type='lcps', scraper_class='LCPSScraper'\n   - Loudoun BOS: name='Loudoun BOS', url='https://webapi.legistar.com/v1/loudoun/events', source_type='loudoun_bos', scraper_class='LegistarScraper'\n7. Verify schema: `psql ... -c '\\dt'` should list all 6 tables",
+        "testStrategy": "Run `alembic current` — shows head. `SELECT COUNT(*) FROM sources` returns 2. `\\d agenda_items` shows search_vector column and trigger exists.",
+        "priority": "high",
+        "dependencies": ["1"],
+        "status": "pending",
+        "subtasks": [],
+        "updatedAt": "2026-05-09T20:00:00.000Z"
+      },
+      {
+        "id": "3",
+        "title": "Gemma 4 integration: implement and test all 3 prompts via Ollama",
+        "description": "This is the critical unblock for the entire project. Get Gemma 4 returning reliable, valid JSON from real LCPS document text using all 3 prompts.",
+        "details": "1. Locate `backend/pipeline/gemma.py` — verify the 3 prompt templates (PROMPT_1_TEMPLATE, PROMPT_2_TEMPLATE, PROMPT_3_TEMPLATE)\n2. Download a real LCPS board meeting agenda PDF from https://go.boarddocs.com/vsba/loudoun/Board.nsf/Public\n3. Extract one agenda item section manually (copy ~500 chars of text from the PDF)\n4. Write a test script `backend/tests/test_gemma.py`:\n   ```python\n   from pipeline.gemma import analyze_chunk, classify_item, generate_meeting_overview\n\n   TEST_CHUNK = \"\"\"AGENDA ITEM 3.1 - BUDGET AMENDMENT FY2026...\"\"\"\n\n   # Test Prompt 1\n   result1 = analyze_chunk(TEST_CHUNK)\n   assert 'title' in result1\n   assert 'summary' in result1\n   assert isinstance(result1['decisions'], list)\n   print('Prompt 1 OK:', result1['title'])\n\n   # Test Prompt 2\n   result2 = classify_item(result1['summary'])\n   assert result2['primary_category'] in CATEGORY_SLUGS\n   assert result2['urgency'] in ['routine', 'notable', 'significant']\n   assert isinstance(result2['fiscal_impact'], bool)\n   print('Prompt 2 OK: category =', result2['primary_category'])\n\n   # Test Prompt 3\n   result3 = generate_meeting_overview([result1['summary']])\n   assert 'meeting_overview' in result3\n   assert isinstance(result3['top_decisions'], list)\n   print('Prompt 3 OK:', result3['meeting_overview'][:100])\n   ```\n5. Run the test: `cd backend && python tests/test_gemma.py`\n6. If Gemma returns malformed JSON: adjust prompt wording to reinforce 'return ONLY valid JSON, no markdown, no backticks'\n7. Confirm retry logic works: temporarily break the model name, verify GemmaError is raised after max retries",
+        "testStrategy": "All 3 prompts return valid JSON matching their expected schemas. Prompt 2 returns a valid category slug. Prompt 3 returns a non-empty meeting_overview string. Retry logic raises GemmaError after 3 failed attempts.",
+        "priority": "high",
+        "dependencies": ["1"],
+        "status": "pending",
+        "subtasks": [],
+        "updatedAt": "2026-05-09T20:00:00.000Z"
+      },
+      {
+        "id": "4",
+        "title": "PDF extractor: download and pdfplumber text extraction",
+        "description": "Implement and verify the PDF downloader and pdfplumber extractor that converts government PDFs into page-by-page text.",
+        "details": "1. Locate `backend/pipeline/extractor.py` — verify `download_pdf(url)` and `extract_text_from_bytes(pdf_bytes)` functions\n2. Test with a real LCPS PDF URL:\n   ```python\n   from pipeline.extractor import download_pdf, extract_text_from_bytes\n   pdf_bytes, sha256 = download_pdf('https://...real-lcps-url.pdf')\n   print(f'Downloaded {len(pdf_bytes)} bytes, sha256: {sha256[:12]}')\n   pages = extract_text_from_bytes(pdf_bytes)\n   print(f'Extracted {len(pages)} pages')\n   print('Page 1 preview:', pages[0][:300])\n   ```\n3. Confirm MIME type validation rejects non-PDF URLs\n4. Confirm SHA-256 hashing is consistent (same file = same hash)\n5. Handle edge case: some LCPS PDFs use image-based scans — log a warning if text extraction returns empty pages (OCR is out of scope for v1)\n6. Ensure temp file cleanup happens even on exceptions (use try/finally)",
+        "testStrategy": "download_pdf() returns bytes + 64-char hex sha256. extract_text_from_bytes() returns a non-empty list of strings. ValueError raised for non-PDF URLs. Temp files are cleaned up.",
+        "priority": "high",
+        "dependencies": ["1"],
+        "status": "pending",
+        "subtasks": [],
+        "updatedAt": "2026-05-09T20:00:00.000Z"
+      },
+      {
+        "id": "5",
+        "title": "Agenda item chunker: split PDF text into per-item sections",
+        "description": "Implement and tune the chunker that splits raw PDF text on agenda item headers and caps each chunk at 2,000 characters.",
+        "details": "1. Locate `backend/pipeline/chunker.py` — verify `split_into_chunks(pages: list[str]) -> list[str]`\n2. The regex must match these patterns (case-insensitive):\n   - `AGENDA ITEM 3` / `AGENDA ITEM 3.1`\n   - `ITEM 4` / `ITEM 4.2`\n   - `PUBLIC HEARING`\n   - `ACTION ITEM 2`\n   - `CONSENT AGENDA`\n   - `INFORMATION ITEM 1`\n3. Test with the extracted pages from task 4:\n   ```python\n   from pipeline.chunker import split_into_chunks\n   chunks = split_into_chunks(pages)\n   print(f'{len(chunks)} chunks found')\n   for i, c in enumerate(chunks[:3]):\n       print(f'--- Chunk {i+1} ({len(c)} chars) ---')\n       print(c[:200])\n   ```\n4. Verify chunks are capped at PDF_CHUNK_MAX_CHARS (2000)\n5. Verify short chunks (<100 chars) are dropped\n6. If a real LCPS document produces 0 chunks, inspect the raw text and adjust the regex pattern\n7. Test the paragraph-boundary sub-chunking for long items",
+        "testStrategy": "A real LCPS agenda PDF produces at least 3 chunks. No chunk exceeds 2,000 chars. Chunks shorter than 100 chars are excluded. Each chunk contains readable agenda item text.",
+        "priority": "high",
+        "dependencies": ["4"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "6",
+        "title": "Pipeline validator: implement and verify all 10 quality checks",
+        "description": "Ensure the validation gate correctly accepts good Gemma 4 output and rejects bad output before any database write.",
+        "details": "1. Locate `backend/pipeline/validator.py` — verify `validate_item(prompt1, prompt2)` raises `ValidationError` with descriptive messages\n2. Verify all 10 checks are implemented:\n   - Check 1: title is non-empty string\n   - Check 2: title ≤ 300 chars\n   - Check 3: summary is non-empty string\n   - Check 4: summary ≥ 80 chars\n   - Check 5: summary not in placeholder set (n/a, none, unknown, tbd)\n   - Check 6: decisions is a list, ≤ 20 items\n   - Check 7: action_items is a list\n   - Check 8: primary_category is one of the 12 valid slugs\n   - Check 9: urgency is 'routine', 'notable', or 'significant'\n   - Check 10: fiscal_impact is a boolean\n3. Write unit tests:\n   ```python\n   from pipeline.validator import validate_item, ValidationError\n   import pytest\n\n   # Should pass\n   validate_item(\n     {'title': 'Budget Amendment', 'summary': 'The board approved a $2M budget amendment for new buses.' * 2,\n      'decisions': ['Approved 5-2'], 'action_items': []},\n     {'primary_category': 'budget-finance', 'urgency': 'notable', 'fiscal_impact': True}\n   )\n\n   # Should fail — short summary\n   with pytest.raises(ValidationError, match='Check 4'):\n     validate_item({'title': 'X', 'summary': 'Too short'}, {...})\n   ```\n4. Run all validator unit tests",
+        "testStrategy": "All 10 failure cases raise ValidationError with the correct check number. A valid Gemma 4 output passes without error. Tests run in < 1 second (no Ollama calls).",
+        "priority": "high",
+        "dependencies": ["3"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "7",
+        "title": "Web scrapers: LCPS BeautifulSoup scraper and Loudoun BOS Legistar API client",
+        "description": "Implement and verify both document discovery scrapers so the pipeline can find real PDFs from both sources.",
+        "details": "1. Locate `backend/pipeline/scraper.py` — verify `scrape_lcps()` and `scrape_loudoun_bos()`\n2. Test the LCPS scraper:\n   ```python\n   import httpx\n   from pipeline.scraper import scrape_lcps\n   with httpx.Client() as client:\n       docs = scrape_lcps(client)\n   print(f'Found {len(docs)} LCPS docs')\n   for d in docs[:3]:\n       print(d.url, d.title)\n   ```\n3. If lcps.org blocks the request, inspect the HTML structure and fix the selector. Try the BoardDocs API: `GET https://go.boarddocs.com/vsba/loudoun/Board.nsf/AJAX-PublicMeetingList`\n4. Test the Loudoun BOS Legistar client:\n   ```python\n   import httpx\n   from pipeline.scraper import scrape_loudoun_bos\n   with httpx.Client() as client:\n       docs = scrape_loudoun_bos(client)\n   print(f'Found {len(docs)} BOS docs')\n   ```\n5. Verify Legistar API returns real event data: `curl 'https://webapi.legistar.com/v1/loudoun/events?$top=5'`\n6. Verify polite_get() adds the 4-second delay\n7. Verify browser-like User-Agent headers are set on all requests\n8. Test `discover_all_documents()` returns combined list",
+        "testStrategy": "scrape_lcps() returns ≥ 1 DiscoveredDocument with a .pdf URL. scrape_loudoun_bos() returns ≥ 1 DiscoveredDocument. Both scrapers handle HTTP errors gracefully (log warning, return empty list).",
+        "priority": "high",
+        "dependencies": ["1"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "8",
+        "title": "Pipeline publisher: DB write, Redis cache invalidation, and WebSocket broadcast",
+        "description": "Implement and test the publisher that atomically writes validated agenda items to PostgreSQL, invalidates Redis cache keys, and broadcasts WebSocket notifications.",
+        "details": "1. Locate `backend/pipeline/publisher.py` — verify `write_agenda_item()`, `update_meeting_overview()`, `invalidate_and_broadcast()`\n2. Test DB write with a mock agenda item:\n   ```python\n   from sqlalchemy.orm import Session\n   from app.database import engine\n   from pipeline.publisher import write_agenda_item\n\n   with Session(engine) as db:\n       item = write_agenda_item(\n           db, meeting_id=test_meeting_id, item_order=0,\n           prompt1={'title': 'Test Item', 'summary': 'Test summary ' * 10,\n                    'decisions': [], 'action_items': [], 'key_figures': {}},\n           prompt2={'primary_category': 'general', 'secondary_tags': [],\n                    'urgency': 'routine', 'fiscal_impact': False, 'affects_schools': []},\n           source_pdf_url='https://example.com/test.pdf',\n           raw_chunk='raw text here'\n       )\n       db.commit()\n       print('Written item ID:', item.id)\n   ```\n3. Verify the `search_vector` field is automatically populated by the trigger after INSERT\n4. Test Redis invalidation patterns: 'meetings:list:*', 'meetings:detail:{id}', 'categories:{slug}:*'\n5. Test WebSocket broadcast publishes to the `lcps:new_content` channel\n6. Verify `update_meeting_overview()` sets processing_status = 'completed'",
+        "testStrategy": "AgendaItem inserted with correct fields. search_vector is not NULL after INSERT. Redis keys matching invalidation patterns are deleted. WebSocket channel receives broadcast message.",
+        "priority": "high",
+        "dependencies": ["2", "6"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "9",
+        "title": "Pipeline worker: wire APScheduler to run the full end-to-end pipeline",
+        "description": "Run the complete automated pipeline on a real LCPS document — from URL discovery through Gemma 4 analysis to live content in the database.",
+        "details": "1. Locate `backend/pipeline/worker.py` — verify `run_pipeline()` and `_execute_pipeline()` flow\n2. Set `PIPELINE_INTERVAL_HOURS=999` in .env temporarily to prevent auto-scheduling\n3. Run a single manual pipeline pass:\n   ```bash\n   cd backend && python -c \"from pipeline.worker import run_pipeline; run_pipeline()\"\n   ```\n4. Watch the logs — verify each step runs: discover → deduplicate → download → extract → chunk → Gemma 4 → validate → write → publish\n5. After run, verify in DB:\n   ```sql\n   SELECT COUNT(*) FROM meetings;        -- should be ≥ 1\n   SELECT COUNT(*) FROM agenda_items;    -- should be ≥ 1\n   SELECT title, primary_category, urgency FROM agenda_items LIMIT 5;\n   SELECT status FROM pipeline_runs ORDER BY started_at DESC LIMIT 1;  -- 'completed'\n   ```\n6. Run a second time — verify deduplication skips already-processed documents (documents_new stays 0)\n7. Test that failed Gemma 4 items increment items_failed in pipeline_run and do NOT appear in agenda_items\n8. Restore normal PIPELINE_INTERVAL_HOURS after verification\n9. Test APScheduler: start worker.py, verify it logs 'Pipeline run starting' on schedule",
+        "testStrategy": "After one manual run: ≥1 meeting and ≥1 agenda_item in DB. pipeline_runs shows status='completed'. Second run produces documents_new=0. All agenda_items have valid primary_category and non-null summary.",
+        "priority": "high",
+        "dependencies": ["3", "4", "5", "6", "7", "8"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "10",
+        "title": "FastAPI web server: meetings and categories endpoints with Redis caching",
+        "description": "Stand up the FastAPI web server with the core read endpoints, confirm they serve real data from the database, and verify Redis caching works.",
+        "details": "1. Locate `backend/app/main.py` — verify all 5 routers are included\n2. Start the API server: `uvicorn app.main:app --reload --port 8000`\n3. Test each endpoint manually:\n   ```bash\n   curl http://localhost:8000/ | python3 -m json.tool\n   curl 'http://localhost:8000/api/meetings?page=1&page_size=5' | python3 -m json.tool\n   curl http://localhost:8000/api/categories | python3 -m json.tool\n   curl 'http://localhost:8000/api/categories/budget-finance' | python3 -m json.tool\n   curl http://localhost:8000/api/health | python3 -m json.tool\n   ```\n4. After pipeline has run (task 9): verify meetings endpoint returns real data with meeting_overview populated\n5. Verify Redis caching: hit the same endpoint twice, second call should be faster and log 'cache hit'\n6. Verify cache invalidation: trigger pipeline, then call meetings endpoint — should return fresh data\n7. Test POST /api/pipeline/trigger with correct API key returns {status: 'ok'}\n8. Test POST /api/pipeline/trigger with wrong API key returns 401\n9. Open http://localhost:8000/docs — verify all endpoints appear with correct schemas",
+        "testStrategy": "All endpoints return 200 with valid JSON. /api/meetings returns items array with meeting_overview populated. /api/health shows last_run_at. Redis cache reduces response time on second call. Swagger UI at /docs shows all routes.",
+        "priority": "high",
+        "dependencies": ["2", "9"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "11",
+        "title": "FastAPI search endpoint and WebSocket real-time updates",
+        "description": "Implement and test the PostgreSQL full-text search endpoint and the WebSocket connection that pushes live notifications to frontend clients.",
+        "details": "1. Test the search endpoint:\n   ```bash\n   curl 'http://localhost:8000/api/search?q=budget' | python3 -m json.tool\n   curl 'http://localhost:8000/api/search?q=transportation+buses' | python3 -m json.tool\n   ```\n2. Verify search results are ranked by ts_rank (most relevant first)\n3. Verify search uses the `search_vector` GIN index (check EXPLAIN ANALYZE output)\n4. Test WebSocket connection:\n   ```python\n   import asyncio, websockets, json\n\n   async def test_ws():\n       async with websockets.connect('ws://localhost:8000/ws/updates') as ws:\n           # Trigger a pipeline run to generate a broadcast\n           print('Connected, waiting for message...')\n           msg = await asyncio.wait_for(ws.recv(), timeout=60)\n           print('Received:', json.loads(msg))\n\n   asyncio.run(test_ws())\n   ```\n5. Verify WebSocket broadcast arrives when pipeline publishes a new item\n6. Verify WebSocket reconnects after server restart (test client-side reconnect logic)\n7. Test search with no results returns empty items array and total=0\n8. Test search with q shorter than 2 chars returns 422",
+        "testStrategy": "Search for a keyword that appears in a real agenda item returns that item. ts_rank orders results correctly. WebSocket client receives {type: 'new_item'} message when pipeline runs. Edge cases return correct HTTP status codes.",
+        "priority": "medium",
+        "dependencies": ["10"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "12",
+        "title": "Frontend setup: Next.js 14, TypeScript, HeroUI, Tailwind, TanStack Query",
+        "description": "Install all frontend dependencies and verify the Next.js app builds cleanly and connects to the FastAPI backend.",
+        "details": "1. `cd frontend && npm install`\n2. Create `.env.local`:\n   ```\n   NEXT_PUBLIC_API_URL=http://localhost:8000\n   NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws/updates\n   ```\n3. Run `npm run dev` and verify http://localhost:3000 loads without errors\n4. Fix any TypeScript errors: `npm run type-check`\n5. Fix any ESLint errors: `npm run lint`\n6. Verify `tailwind.config.ts` includes HeroUI plugin and content paths for all component files\n7. Verify `app/providers.tsx` wraps app with HeroUIProvider and QueryClientProvider\n8. Verify `app/layout.tsx` includes Navbar and CategoryTicker\n9. Test the API client: open browser console on homepage, verify no CORS errors when fetching from FastAPI\n10. Verify Inter font loads (check Network tab)\n11. Verify dark mode is applied (html element has class='dark')",
+        "testStrategy": "npm install completes with no peer dependency errors. npm run dev starts without errors. Homepage loads at localhost:3000. No TypeScript errors on type-check. No CORS errors in browser console when API is running.",
+        "priority": "high",
+        "dependencies": ["10"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "13",
+        "title": "Homepage and MeetingCard component with real data",
+        "description": "Build out the homepage to display real meeting cards from the API using the masonry grid layout, category navigation, and all card UI details.",
+        "details": "1. Locate `frontend/app/page.tsx` — verify it calls getMeetings() and getCategories() server-side\n2. Verify `frontend/components/cards/MeetingCard.tsx` renders all fields:\n   - Source badge (SCHOOL BOARD)\n   - Meeting date (formatted: 'May 5, 2026')\n   - Title (font-display serif)\n   - 2-sentence summary preview (line-clamp-3)\n   - Top 2 decisions as bullet list\n   - Total items count and fiscal items count\n   - External link to source PDF\n3. Verify masonry grid CSS (`columns: 1/2/3` at sm/lg breakpoints) in globals.css\n4. Verify `CategoryTicker` component auto-scrolls (framer-motion `animate={{ x: ['0%', '-50%'] }}`)\n5. Verify `Navbar` renders correctly with frosted glass effect (backdrop-blur-lg)\n6. Test on mobile (375px): resize browser, verify nothing overflows\n7. Test dark mode colors: background should be #0a0f1e, not pure black\n8. Test with 0 meetings (empty state message should show)\n9. If ISR revalidation needs to be tested: use `curl -X POST http://localhost:3000/api/revalidate` or just wait 15 min",
+        "testStrategy": "Homepage shows real meeting cards when pipeline has run. Masonry grid has correct column count at each breakpoint. Cards link to correct /meetings/{id} URLs. Category ticker scrolls continuously. Mobile layout renders without horizontal scroll.",
+        "priority": "high",
+        "dependencies": ["12"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "14",
+        "title": "Meeting detail page, category pages, and search page",
+        "description": "Implement and verify the three inner pages: meeting detail with accordion, category feed with filters, and debounced search.",
+        "details": "1. **Meeting detail page** (`/meetings/[id]`):\n   - Verify back navigation link works\n   - Verify meeting_overview, top_decisions, quick stats all render\n   - Verify expandable `<details>` accordion for each agenda_item\n   - Inside accordion: full summary, decisions list, action_items list, source PDF link with page_range\n   - Test with a meeting that has fiscal_items > 0 (fiscal total should show)\n   - Test 404 behavior: visit /meetings/non-existent-id\n\n2. **Category pages** (`/category/[slug]`):\n   - Verify all 12 slugs resolve to a page (`generateStaticParams` returns them all)\n   - Verify items display with correct urgency border color\n   - Verify secondary_tags appear as chips\n   - Test fiscal_only filter: add `?fiscal_only=true` to URL (may need query param wiring)\n   - Test empty category (no items yet): shows 'No items in this category yet.'\n\n3. **Search page** (`/search`):\n   - Verify debouncing: type quickly, only one API call fires after 400ms\n   - Verify results appear with category chip and urgency border\n   - Verify 0 results shows 'No results found.'\n   - Verify query shorter than 2 chars shows no results (no API call)\n   - Test keyboard: pressing Enter should not submit a form",
+        "testStrategy": "Meeting detail page loads with all accordion items for a real meeting. Each of the 12 category pages loads without 404. Search returns results for a keyword present in real data. Debounce prevents API calls on every keystroke.",
+        "priority": "high",
+        "dependencies": ["13"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      },
+      {
+        "id": "15",
+        "title": "Docker Compose full stack, ngrok tunnel, Vercel deploy, and hackathon submission prep",
+        "description": "Get everything running end-to-end in Docker Compose, deploy the frontend to Vercel, wire it to the local backend via ngrok, and complete all hackathon submission requirements.",
+        "details": "1. **Docker Compose full stack**:\n   ```bash\n   docker compose up --build\n   ```\n   - Verify all 4 services start: postgres, redis, api, pipeline\n   - Run migrations inside the api container: `docker compose exec api alembic upgrade head`\n   - Seed sources table: `docker compose exec api python -c 'from scripts.seed import seed; seed()'` (create seed script if needed)\n   - Verify GET http://localhost:8000/api/health returns ok\n\n2. **ngrok tunnel** (for Vercel → local backend):\n   ```bash\n   ngrok http 8000\n   # Copy the https URL e.g. https://abc123.ngrok.io\n   ```\n\n3. **Vercel deployment**:\n   - Push frontend to GitHub\n   - Connect repo to Vercel\n   - Set env vars in Vercel dashboard:\n     - NEXT_PUBLIC_API_URL=https://abc123.ngrok.io\n     - NEXT_PUBLIC_WS_URL=wss://abc123.ngrok.io/ws/updates\n   - Deploy and verify live URL loads real data\n\n4. **Demo video** (< 3 min):\n   - Show a real LCPS PDF URL being discovered\n   - Show pipeline log output as it processes\n   - Show the live blog card appear on the public Vercel URL\n   - Record with OBS or Loom\n\n5. **README completeness check**:\n   - Architecture diagram present\n   - All 3 Gemma 4 prompts documented\n   - Setup commands work on a clean machine\n   - Demo video link included\n   - Screenshots of the live UI\n\n6. **Kaggle Notebook** technical write-up — paste from Notion docs\n\n7. **Submission checklist**:\n   - [ ] GitHub repo is public\n   - [ ] Live Vercel URL accessible without login\n   - [ ] Kaggle Notebook public\n   - [ ] Track: Digital Equity selected\n   - [ ] Submit on Kaggle before May 18, 2026 at 11:59 PM UTC",
+        "testStrategy": "docker compose up starts all 4 services with no errors. Live Vercel URL shows real meeting cards loaded from local FastAPI via ngrok. Demo video shows full real-document flow in under 3 minutes. Kaggle submission form completed and confirmed.",
+        "priority": "high",
+        "dependencies": ["9", "11", "14"],
+        "status": "pending",
+        "updatedAt": "2026-05-09T20:00:00.000Z",
+        "subtasks": []
+      }
+    ]
+  }
+}
