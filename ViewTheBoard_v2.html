@@ -1,0 +1,707 @@
+
+<h2 class="sr-only">View the Board — homepage with scroll-hide navbar, date header, and affiliate content section at bottom</h2>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.site { background: var(--color-background-tertiary); }
+
+/* NAV */
+.nav {
+  background: var(--color-background-primary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 54px;
+  position: sticky; top: 0; z-index: 100;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.nav.hidden { transform: translateY(-100%); opacity: 0; }
+.nav-logo { font-size: 16px; font-weight: 500; color: var(--color-text-primary); letter-spacing: -0.4px; }
+.nav-tabs { display: flex; }
+.nav-tab {
+  font-size: 13px; color: var(--color-text-secondary);
+  padding: 0 16px; height: 54px; display: flex; align-items: center;
+  border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap;
+}
+.nav-tab.active { color: var(--color-text-primary); font-weight: 500; border-bottom-color: var(--color-text-primary); }
+.search-pill {
+  font-size: 12px; color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 20px; padding: 6px 14px; cursor: pointer;
+}
+
+/* ── INTRO / DATE HEADER ── */
+.intro {
+  background: var(--color-background-primary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  padding: 28px 28px 0;
+}
+
+.intro-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 24px;
+}
+
+/* Calendar tile */
+.cal-tile {
+  flex-shrink: 0;
+  width: 88px;
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 16px;
+  overflow: hidden;
+  text-align: center;
+}
+.cal-tile-month {
+  background: #C62828;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 0 4px;
+}
+.cal-tile-day {
+  font-size: 38px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+  padding: 8px 0 4px;
+  font-family: var(--font-serif);
+}
+.cal-tile-dow {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding: 0 0 8px;
+  letter-spacing: 0.03em;
+}
+.cal-tile-year {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  padding: 0 0 9px;
+}
+
+/* Right of tile */
+.intro-meta {
+  flex: 1;
+  padding-top: 4px;
+}
+.intro-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 20px;
+  padding: 3px 10px 3px 8px;
+  margin-bottom: 12px;
+}
+.upd-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #1D9E75;
+  flex-shrink: 0;
+}
+.intro-headline {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.intro-sub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 480px;
+}
+
+/* ── ACTIVITY LOG ── */
+.activity-log {
+  border-top: 0.5px solid var(--color-border-tertiary);
+  padding: 14px 0 0;
+}
+.activity-log-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+}
+.activity-list {
+  display: flex;
+  flex-direction: column;
+}
+.activity-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  cursor: pointer;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-item:hover .activity-title { color: #C62828; }
+.act-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ab-approved { background: #E1F5EE; color: #085041; }
+.ab-denied   { background: #FCEBEB; color: #791F1F; }
+.ab-deferred { background: #FAEEDA; color: #633806; }
+.ab-added    { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.act-board {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 130px;
+}
+.activity-title {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  flex: 1;
+  transition: color 0.15s;
+}
+.act-vote {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── MAIN ── */
+.main { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+
+/* SECTION */
+.section {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  overflow: hidden;
+}
+.section-header {
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-left { display: flex; align-items: center; gap: 10px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.dot-blue   { background: #378ADD; }
+.dot-teal   { background: #1D9E75; }
+.dot-amber  { background: #BA7517; }
+.dot-purple { background: #7F77DD; }
+.section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.section-meta { font-size: 12px; color: var(--color-text-secondary); margin-left: 19px; margin-top: 2px; }
+.view-all { font-size: 12px; color: var(--color-text-secondary); cursor: pointer; }
+
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 0.5px solid var(--color-border-tertiary); }
+.card { padding: 18px 20px; border-right: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; gap: 10px; }
+.card:last-child { border-right: none; }
+.card-top { display: flex; align-items: center; justify-content: space-between; }
+.card-date { font-size: 11px; color: var(--color-text-secondary); }
+.badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+.b-sig    { background: #FCEBEB; color: #791F1F; }
+.b-notable{ background: #FAEEDA; color: #633806; }
+.b-routine{ background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.b-teal   { background: #E1F5EE; color: #085041; }
+.b-purple { background: #EEEDFE; color: #3C3489; }
+.card-title   { font-family: var(--font-serif); font-size: 14px; font-weight: 500; color: var(--color-text-primary); line-height: 1.4; }
+.card-summary { font-size: 12px; color: var(--color-text-secondary); line-height: 1.55; }
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 6px; border-top: 0.5px solid var(--color-border-tertiary); }
+.tag        { font-size: 10px; color: var(--color-text-secondary); background: var(--color-background-secondary); padding: 2px 7px; border-radius: 4px; }
+.tag-fiscal { font-size: 10px; color: #3B6D11; background: #EAF3DE; padding: 2px 7px; border-radius: 4px; }
+
+.section-footer {
+  border-top: 0.5px solid var(--color-border-tertiary);
+  padding: 10px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-stat { font-size: 11px; color: var(--color-text-secondary); }
+.footer-link { font-size: 12px; font-weight: 500; color: var(--color-text-primary); cursor: pointer; }
+
+.comm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 0.5px solid var(--color-border-tertiary); }
+.comm-card { padding: 16px 20px; border-right: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; gap: 6px; }
+.comm-card:last-child { border-right: none; }
+.comm-name    { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.comm-date    { font-size: 11px; color: var(--color-text-secondary); }
+.comm-preview { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+/* ── AFFILIATE / CONTENT SECTION ── */
+.content-section { padding: 0 28px 40px; display: flex; flex-direction: column; gap: 20px; }
+.content-divider { display: flex; align-items: center; gap: 14px; padding: 8px 0 4px; }
+.content-divider-line  { flex: 1; height: 0.5px; background: var(--color-border-tertiary); }
+.content-divider-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-secondary); white-space: nowrap; }
+
+.resources-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.resource-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 6px; cursor: pointer;
+}
+.resource-card:hover { border-color: var(--color-border-secondary); }
+.resource-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
+.resource-title   { font-size: 13px; font-weight: 500; color: var(--color-text-primary); line-height: 1.35; }
+.resource-desc    { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.resource-cta     { font-size: 11px; color: var(--color-text-secondary); margin-top: 4px; }
+
+.affiliate-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.affiliate-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 5px; cursor: pointer; position: relative;
+}
+.aff-label {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--color-text-secondary); background: var(--color-background-secondary);
+  padding: 1px 5px; border-radius: 3px;
+}
+.aff-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; font-size: 14px; }
+.aff-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.aff-desc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.4; }
+
+.newsletter {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+}
+.newsletter-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.newsletter-sub   { font-size: 12px; color: var(--color-text-secondary); }
+.newsletter-form  { display: flex; gap: 8px; flex-shrink: 0; }
+.newsletter-input {
+  font-size: 13px; padding: 7px 12px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  width: 200px; outline: none;
+}
+.newsletter-btn {
+  font-size: 13px; font-weight: 500; padding: 7px 14px;
+  background: var(--color-text-primary); color: var(--color-background-primary);
+  border: none; border-radius: var(--border-radius-md); cursor: pointer; white-space: nowrap;
+}
+
+.site-footer {
+  border-top: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+  padding: 20px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-links    { display: flex; gap: 20px; }
+.footer-link-item{ font-size: 12px; color: var(--color-text-secondary); cursor: pointer; }
+.footer-copy     { font-size: 11px; color: var(--color-text-secondary); }
+</style>
+
+<div class="site">
+
+  <!-- NAV -->
+  <nav class="nav" id="navbar">
+    <div class="nav-logo">View the Board</div>
+    <div class="nav-tabs">
+      <div class="nav-tab active">All</div>
+      <div class="nav-tab">School Board</div>
+      <div class="nav-tab">Supervisors</div>
+      <div class="nav-tab">Appeals</div>
+      <div class="nav-tab">Commissions</div>
+    </div>
+    <div class="search-pill">Search decisions</div>
+  </nav>
+
+  <!-- INTRO: DATE + ACTIVITY LOG -->
+  <div class="intro">
+    <div class="intro-top">
+
+      <!-- Calendar tile -->
+      <div class="cal-tile">
+        <div class="cal-tile-month">May</div>
+        <div class="cal-tile-day">11</div>
+        <div class="cal-tile-dow">Monday</div>
+        <div class="cal-tile-year">2026</div>
+      </div>
+
+      <!-- Meta + headline -->
+      <div class="intro-meta">
+        <div class="intro-updated">
+          <div class="upd-dot"></div>
+          Last updated today at 6:02 AM
+        </div>
+        <div class="intro-headline">What Loudoun County decided this week</div>
+        <div class="intro-sub">Plain-English summaries of every public board meeting — written automatically from official documents so any resident can stay informed.</div>
+      </div>
+
+    </div>
+
+    <!-- Activity log -->
+    <div class="activity-log">
+      <div class="activity-log-label">Changes &amp; decisions recorded — May 7–11, 2026</div>
+      <div class="activity-list">
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">School Board · May 7</span>
+          <span class="activity-title">$2.3M bus route expansion funded — 12 new routes for eastern district, effective August 2026</span>
+          <span class="act-vote">6–1</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">School Board · May 7</span>
+          <span class="activity-title">K–8 STEM curriculum adopted for 14 elementary schools — rollout begins September</span>
+          <span class="act-vote">Unanimous</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">School Board · May 7</span>
+          <span class="activity-title">Superintendent contract renewed through June 2029 — no changes to compensation</span>
+          <span class="act-vote">Unanimous</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">Supervisors · May 5</span>
+          <span class="activity-title">Route 7 corridor rezoned for mixed-use development — traffic study required by Q3 2026</span>
+          <span class="act-vote">5–3</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">Supervisors · May 5</span>
+          <span class="activity-title">$4.8M park and trail network funded for Ashburn — groundbreaking spring 2027</span>
+          <span class="act-vote">7–1</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">Supervisors · May 5</span>
+          <span class="activity-title">FY2025 annual audit accepted — no material findings in county financial controls</span>
+          <span class="act-vote">Unanimous</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-denied">Denied</span>
+          <span class="act-board">BZA · May 1</span>
+          <span class="activity-title">Variance request for accessory dwelling on 0.18-acre lot denied — below R-2 minimum</span>
+          <span class="act-vote">4–1</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-approved">Approved</span>
+          <span class="act-board">BZA · May 1</span>
+          <span class="activity-title">Special exception for home-based childcare (up to 8 children) — annual review required</span>
+          <span class="act-vote">5–0</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-added">Updated</span>
+          <span class="act-board">Planning · May 6</span>
+          <span class="activity-title">Route 28 corridor amendments reviewed — public comment period extended 30 days</span>
+          <span class="act-vote">3 items</span>
+        </div>
+
+        <div class="activity-item">
+          <span class="act-badge ab-added">Updated</span>
+          <span class="act-board">Econ Dev · Apr 28</span>
+          <span class="activity-title">Data center expansion incentive package endorsed — projected 400 jobs by 2028</span>
+          <span class="act-vote">2 items</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- SCHOOL BOARD -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-left"><div class="dot dot-blue"></div><div class="section-title">LCPS School Board</div></div>
+          <div class="section-meta">Meets 2nd &amp; 4th Tuesday · Loudoun County Public Schools</div>
+        </div>
+        <div class="view-all">View all →</div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 7, 2026</div><div class="badge b-sig">Significant</div></div>
+          <div class="card-title">$2.3M bus route expansion approved for eastern district</div>
+          <div class="card-summary">The board voted 6–1 to fund 12 new routes serving underserved neighborhoods, effective August 2026.</div>
+          <div class="card-tags"><div class="tag">Transportation</div><div class="tag-fiscal">$ Fiscal</div></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 7, 2026</div><div class="badge b-notable">Notable</div></div>
+          <div class="card-title">K–8 STEM curriculum adopted for all elementary schools</div>
+          <div class="card-summary">New science and technology curriculum rolls out to 14 schools in September. Teacher training begins July.</div>
+          <div class="card-tags"><div class="tag">Schools &amp; Education</div></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 7, 2026</div><div class="badge b-routine">Routine</div></div>
+          <div class="card-title">Superintendent contract renewed through June 2029</div>
+          <div class="card-summary">Board unanimously approved the three-year renewal. No changes to compensation structure.</div>
+          <div class="card-tags"><div class="tag">Personnel</div></div>
+        </div>
+      </div>
+      <div class="section-footer">
+        <div class="footer-stat">3 meetings · 18 items this month</div>
+        <div class="footer-link">All School Board meetings →</div>
+      </div>
+    </div>
+
+    <!-- BOARD OF SUPERVISORS -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-left"><div class="dot dot-teal"></div><div class="section-title">Board of Supervisors</div></div>
+          <div class="section-meta">Meets 1st &amp; 3rd Tuesday · Loudoun County Government</div>
+        </div>
+        <div class="view-all">View all →</div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 5, 2026</div><div class="badge b-sig">Significant</div></div>
+          <div class="card-title">Route 7 corridor rezoned for mixed-use development</div>
+          <div class="card-summary">A 2-mile stretch approved 5–3 for high-density residential and retail. Traffic study required by Q3 2026.</div>
+          <div class="card-tags"><div class="tag">Zoning &amp; Land Use</div></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 5, 2026</div><div class="badge b-teal">Notable</div></div>
+          <div class="card-title">$4.8M park and trail network funded for Ashburn district</div>
+          <div class="card-summary">New community park breaks ground spring 2027. Approved 7–1 as part of the FY2027 capital budget.</div>
+          <div class="card-tags"><div class="tag">Community &amp; Parks</div><div class="tag-fiscal">$ Fiscal</div></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 5, 2026</div><div class="badge b-routine">Routine</div></div>
+          <div class="card-title">FY2025 audit accepted with no material findings</div>
+          <div class="card-summary">Annual independent audit found no weaknesses in county financial controls. Accepted without objection.</div>
+          <div class="card-tags"><div class="tag">Budget &amp; Finance</div></div>
+        </div>
+      </div>
+      <div class="section-footer">
+        <div class="footer-stat">2 meetings · 22 items this month</div>
+        <div class="footer-link">All BOS meetings →</div>
+      </div>
+    </div>
+
+    <!-- APPEALS -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-left"><div class="dot dot-amber"></div><div class="section-title">Appeals Boards</div></div>
+          <div class="section-meta">Board of Zoning Appeals · Board of Building Code Appeals</div>
+        </div>
+        <div class="view-all">View all →</div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 1, 2026 · BZA</div><div class="badge b-sig">Significant</div></div>
+          <div class="card-title">Variance denied for accessory dwelling on undersized lot</div>
+          <div class="card-summary">Request for an ADU on a 0.18-acre lot denied 4–1. Minimum lot size in R-2 zone is 0.25 acres.</div>
+          <div class="card-tags"><div class="tag">Zoning &amp; Land Use</div></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div class="card-date">May 1, 2026 · BZA</div><div class="badge b-notable">Notable</div></div>
+          <div class="card-title">Special exception approved for home-based childcare</div>
+          <div class="card-summary">Licensed childcare for up to 8 children approved 5–0 in Leesburg district. Subject to annual review.</div>
+          <div class="card-tags"><div class="tag">Zoning &amp; Land Use</div></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><div class="card-date">Apr 24, 2026 · BBCA</div><div class="badge b-routine">Routine</div></div>
+          <div class="card-title">Sprinkler spacing appeal upheld on equivalent safety grounds</div>
+          <div class="card-summary">BBCA upheld contractor appeal 3–2, accepting alternative spacing as meeting code intent.</div>
+          <div class="card-tags"><div class="tag">Public Safety</div></div>
+        </div>
+      </div>
+      <div class="section-footer">
+        <div class="footer-stat">2 boards · 9 cases this month</div>
+        <div class="footer-link">All appeals decisions →</div>
+      </div>
+    </div>
+
+    <!-- COMMISSIONS -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-left"><div class="dot dot-purple"></div><div class="section-title">Commissions &amp; Committees</div></div>
+          <div class="section-meta">Planning · Parks &amp; Rec · Environmental · Economic Dev · Transportation · and more</div>
+        </div>
+        <div class="view-all">View all →</div>
+      </div>
+      <div class="comm-grid">
+        <div class="comm-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div class="comm-name">Planning Commission</div><div class="badge b-notable">3 items</div></div>
+          <div class="comm-date">Last met May 6, 2026</div>
+          <div class="comm-preview">Reviewed Route 28 corridor amendments. Public comment extended 30 days.</div>
+        </div>
+        <div class="comm-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div class="comm-name">Parks &amp; Recreation</div><div class="badge b-teal">2 items</div></div>
+          <div class="comm-date">Last met May 3, 2026</div>
+          <div class="comm-preview">Claude Moore Park expansion recommended to BOS for capital funding.</div>
+        </div>
+        <div class="comm-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div class="comm-name">Environmental Advisory</div><div class="badge b-teal">4 items</div></div>
+          <div class="comm-date">Last met Apr 30, 2026</div>
+          <div class="comm-preview">New stormwater and erosion standards proposed ahead of summer construction.</div>
+        </div>
+        <div class="comm-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><div class="comm-name">Economic Development</div><div class="badge b-notable">2 items</div></div>
+          <div class="comm-date">Last met Apr 28, 2026</div>
+          <div class="comm-preview">Incentive package for data center expansion endorsed. Est. 400 jobs by 2028.</div>
+        </div>
+      </div>
+      <div class="section-footer">
+        <div class="footer-stat">8 active commissions · updated every 6 hours</div>
+        <div class="footer-link">Browse all commissions →</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONTENT & AFFILIATE SECTION -->
+  <div class="content-section">
+
+    <div class="content-divider">
+      <div class="content-divider-line"></div>
+      <div class="content-divider-label">Loudoun Resources</div>
+      <div class="content-divider-line"></div>
+    </div>
+
+    <div class="resources-grid">
+      <div class="resource-card">
+        <div class="resource-eyebrow">Official source</div>
+        <div class="resource-title">Loudoun County Government website</div>
+        <div class="resource-desc">Access agendas, minutes, and full meeting recordings directly from the county.</div>
+        <div class="resource-cta">loudoun.gov →</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-eyebrow">Official source</div>
+        <div class="resource-title">LCPS BoardDocs meeting portal</div>
+        <div class="resource-desc">View original school board agendas, attachments, and archived meeting video.</div>
+        <div class="resource-cta">lcps.org/boarddocs →</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-eyebrow">Public comment</div>
+        <div class="resource-title">How to speak at a board meeting</div>
+        <div class="resource-desc">Step-by-step guide to signing up for public comment at any Loudoun County board.</div>
+        <div class="resource-cta">View guide →</div>
+      </div>
+    </div>
+
+    <div class="content-divider">
+      <div class="content-divider-line"></div>
+      <div class="content-divider-label">Sponsored</div>
+      <div class="content-divider-line"></div>
+    </div>
+
+    <div class="affiliate-row">
+      <div class="affiliate-card">
+        <div class="aff-label">Ad</div>
+        <div class="aff-icon" style="background:#E6F1FB;">🏠</div>
+        <div class="aff-name">Loudoun Home Search</div>
+        <div class="aff-desc">Browse homes near the districts affected by recent zoning decisions.</div>
+      </div>
+      <div class="affiliate-card">
+        <div class="aff-label">Ad</div>
+        <div class="aff-icon" style="background:#EAF3DE;">📋</div>
+        <div class="aff-name">VA Property Records</div>
+        <div class="aff-desc">Look up tax assessments, permits, and land records for any Loudoun parcel.</div>
+      </div>
+      <div class="affiliate-card">
+        <div class="aff-label">Ad</div>
+        <div class="aff-icon" style="background:#FAEEDA;">⚖️</div>
+        <div class="aff-name">Zoning Attorneys — VA</div>
+        <div class="aff-desc">Local land use attorneys specializing in Loudoun County variance and appeals cases.</div>
+      </div>
+      <div class="affiliate-card">
+        <div class="aff-label">Ad</div>
+        <div class="aff-icon" style="background:#EEEDFE;">📰</div>
+        <div class="aff-name">Loudoun Now</div>
+        <div class="aff-desc">Local news coverage of county government, schools, and community events.</div>
+      </div>
+    </div>
+
+    <div class="content-divider">
+      <div class="content-divider-line"></div>
+      <div class="content-divider-label">Stay informed</div>
+      <div class="content-divider-line"></div>
+    </div>
+
+    <div class="newsletter">
+      <div class="newsletter-left">
+        <div class="newsletter-title">Get a weekly digest in your inbox</div>
+        <div class="newsletter-sub">Every Sunday — the most significant decisions from all Loudoun boards, in plain English. No spam, unsubscribe anytime.</div>
+      </div>
+      <div class="newsletter-form">
+        <input class="newsletter-input" type="email" placeholder="your@email.com" />
+        <button class="newsletter-btn">Subscribe</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SITE FOOTER -->
+  <div class="site-footer">
+    <div class="footer-links">
+      <div class="footer-link-item">About</div>
+      <div class="footer-link-item">Data sources</div>
+      <div class="footer-link-item">Advertise</div>
+      <div class="footer-link-item">Contact</div>
+    </div>
+    <div class="footer-copy">View the Board · Not affiliated with Loudoun County Government · Summaries generated by AI from official public documents</div>
+  </div>
+
+</div>
+
+<script>
+const nav = document.getElementById('navbar');
+let lastY = 0, ticking = false;
+
+function handleScroll() {
+  let currentY = window.scrollY || document.documentElement.scrollTop || 0;
+  if (!currentY) {
+    let el = nav.parentElement;
+    while (el) {
+      if (el.scrollTop > 0) { currentY = el.scrollTop; break; }
+      el = el.parentElement;
+    }
+  }
+  if (currentY > lastY && currentY > 60) {
+    nav.classList.add('hidden');
+  } else {
+    nav.classList.remove('hidden');
+  }
+  lastY = currentY;
+  ticking = false;
+}
+
+function onScroll() {
+  if (!ticking) { requestAnimationFrame(handleScroll); ticking = true; }
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+document.addEventListener('scroll', onScroll, { passive: true });
+
+let el = nav.parentElement;
+while (el) {
+  const ov = getComputedStyle(el).overflowY;
+  if (ov === 'auto' || ov === 'scroll') el.addEventListener('scroll', onScroll, { passive: true });
+  el = el.parentElement;
+}
+</script>

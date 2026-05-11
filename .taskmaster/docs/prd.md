@@ -1,14 +1,14 @@
-# LCPS Board Meeting Analyzer — Product Requirements Document
+# View the Board — Product Requirements Document
 
-**Version:** 1.2 | **Deadline:** May 18, 2026 at 11:59 PM UTC | **Track:** Digital Equity | **Hackathon:** Gemma 4 Good (Kaggle × Google DeepMind)
+**Version:** 1.3 | **Deadline:** May 18, 2026 at 11:59 PM UTC | **Track:** Digital Equity | **Hackathon:** Gemma 4 Good (Kaggle × Google DeepMind)
 
 ---
 
 ## 1. Overview
 
-The LCPS Board Meeting Analyzer is a fully automated civic AI web application that monitors the Loudoun County Public Schools (LCPS) board meetings website and Loudoun County Board of Supervisors site. It uses **Gemma 4** (running locally via Ollama) to read every official document and rewrite it in plain English, then automatically publishes the content to a public blog-style website organized by topic — so any resident can understand what their local government decided without reading a 40-page PDF.
+View the Board is a fully automated civic transparency web application that monitors five Loudoun County governing bodies — the Board of Supervisors, Planning Commission, LCPS School Board, Standing Committees, and Advisory Boards & Commissions. It uses **Gemma 4** (running locally via Ollama) to read every official document and rewrite it in plain English, then automatically publishes the content to a public news-style website organized by board and topic — so any resident can understand what their local government decided without reading a 40-page PDF.
 
-**One-line description:** Gemma 4 reads the official school board page so residents don't have to — then adds the content to the site, already organized, tagged, and written in plain English.
+**One-line description:** View the Board converts official county and LCPS meeting records into plain-English summaries, structured action logs, and decision timelines — powered by Gemma 4, linked to every official source.
 
 ---
 
@@ -196,26 +196,90 @@ Every agenda item routes to exactly one:
 
 ## 9. Frontend Features
 
-### Homepage
-- Frosted glass sticky navbar with dark mode toggle
-- Auto-scrolling category ticker bar below navbar (framer-motion)
-- Hero section with one-line app description
-- 12-category navigation grid with item counts
-- Masonry card grid of latest meeting cards (editorial newspaper layout)
-- Meeting cards: source badge, date, title, 2-sentence summary preview, top decisions, fiscal icon, source PDF link
+### Layout Reference
+The canonical visual design is `ViewTheBoard_v4.html`. All component specs below derive from that file. The design uses CSS custom properties (`--color-background-primary`, `--color-text-primary`, etc.) for full dark/light mode support via the host theme.
+
+---
+
+### Navbar (`<nav>`)
+- Sticky, scroll-hide on scroll-down / reveal on scroll-up (JS `requestAnimationFrame` listener)
+- Left: site wordmark "View the Board" — 16px, weight 500, letter-spacing −0.4px
+- Right: search pill — "Search by board, topic, or keyword" — 12px, rounded-full, background-secondary fill
+- No navigation tabs in the navbar
+
+---
+
+### Intro Section
+- Full-width panel, `background-primary`, bottom border
+- **Left side:** page title `"What Loudoun County decided this week"` — serif font, 26px, weight 500
+- **Right side:** date block + View Calendar button stacked
+  - Date block: large day number (42px serif) + month/year (13px) + day-of-week (11px secondary) displayed side-by-side
+  - "View Calendar →" button below the date — 12px, weight 500, background-secondary fill, 0.5px border, `border-radius-md`
+- Below the title row: **Activity Log**
+  - Label: "Decisions & changes recorded — [date range]" — 10px, uppercase, letter-spacing
+  - Each row: status pill | board name + date | decision title | vote result
+  - Status pills: Approved (green), Denied (red), Deferred (amber), Discussed (purple), Updated (grey)
+  - Rows separated by 0.5px border; last row has no border
+
+---
+
+### Board Sections (homepage feed)
+Four sections rendered in this order:
+1. **Board of Supervisors** — teal dot `#1D9E75`
+2. **Planning Commission** — amber dot `#BA7517`
+3. **LCPS School Board** — blue dot `#378ADD`
+4. **Advisory Boards, Commissions & Standing Committees** — purple dot `#7F77DD`
+
+Each section:
+- `background-primary`, rounded-lg, 0.5px border
+- **Section header:** colored dot + board name (14px, weight 500) + short meta description (12px, secondary) | "View all →" right-aligned
+- **Card grid:** 3-column grid (Sections 1–3) or 4-column grid (Section 4 — `comm-grid`)
+  - Cards separated by 0.5px vertical borders, no outer padding
+  - Each card: date (11px, secondary) + urgency badge | serif title (14px) | 2–4 sentence summary (12px, secondary) | topic tags
+  - Urgency badges: `Significant` (red), `Notable` (amber), `Routine` (grey), `Deferred` (grey), `Teal` (green), `Purple` (purple)
+  - Topic tags: small grey pills; fiscal items get a green `$ Fiscal` tag
+- **Section footer:** stat line (meetings count, source attribution) | "All [Board] meetings →" link
+
+---
+
+### Official Sources Section
+- Appears below the board sections
+- Section divider: horizontal rule + "Official sources" label centred
+- 3-column card grid (`resources-grid`)
+  - Cards: eyebrow label (10px, uppercase) | title (13px, weight 500) | description (12px, secondary) | CTA link (11px)
+  - Covers: Loudoun County meeting portal, LCPS BoardDocs, "How to speak at a board meeting" guide
+
+---
+
+### About / Stats Card
+- Full-width card (`background-primary`, rounded-lg, 0.5px border), below Official Sources
+- **Left:** app description paragraph — "View the Board converts official county and LCPS meeting records into plain-English summaries, structured action logs, and decision timelines — powered by Gemma 4, linked to every official source." — 13px, secondary, max-width 560px
+- **Right:** two stat blocks stacked (right-aligned)
+  - "Last updated" label + timestamp value
+  - "Items this month" label + count value
+
+---
+
+### Newsletter / Digest
+- Section divider: "Stay informed"
+- Full-width card: title + subtitle on left | email input + Subscribe button on right
+- Subtitle: "Every Sunday — the most significant decisions from all five Loudoun County boards, in plain English."
+
+---
+
+### Site Footer
+- `background-primary`, top border
+- Left: footer links — About · Data sources · AI transparency · Contact
+- Right: "View the Board · Not affiliated with Loudoun County Government · Summaries generated by Gemma 4 from official public documents"
+
+---
 
 ### Meeting Detail Page (`/meetings/{id}`)
 - Full meeting overview (Gemma 4 Prompt 3 output)
 - Quick stats bar: item count, fiscal items, total spending
 - Top 3 decisions highlighted
-- Expandable accordion agenda items: full summary → decisions → action items → page reference → source link
+- Expandable accordion agenda items: full summary → decisions → action items → page reference → source PDF link
 - Supporting documents section
-
-### Category Pages (`/category/{slug}`)
-- 12 sections, one per category slug
-- Paginated item feed
-- Sub-tag filter chips
-- Fiscal toggle filter
 
 ### Search Page (`/search`)
 - Full-text search across all content
@@ -223,16 +287,25 @@ Every agenda item routes to exactly one:
 - PostgreSQL tsvector ranked results
 
 ### Live Updates
-- WebSocket connection in Navbar
+- WebSocket connection active in background
 - Toast notification when new content is published by pipeline
 
+---
+
 ### Design System
-- Dark mode first-class (deep navy `#0a0f1e`, not pure black)
-- Serif display font (Georgia) for meeting titles, Inter for UI
-- 12 category accent colors
-- Urgency border colors: slate (routine), amber (notable), red (significant)
-- Masonry grid layout (CSS columns)
-- framer-motion animations throughout
+- **Theme:** CSS custom properties for all colors — supports dark and light mode via host theme; no hardcoded color values in components
+- **Typography:** Serif font (Georgia or equivalent) for all card titles and the intro headline; system sans-serif (Inter or system-ui) for all UI text
+- **Color palette for urgency badges:**
+  - Significant: `#FCEBEB` bg / `#791F1F` text
+  - Notable / Deferred: `#FAEEDA` bg / `#633806` text
+  - Teal / Approved: `#E1F5EE` bg / `#085041` text
+  - Purple / Discussed: `#EEEDFE` bg / `#3C3489` text
+  - Routine / Updated: background-secondary / text-secondary
+- **Board dot colors:** teal `#1D9E75`, amber `#BA7517`, blue `#378ADD`, purple `#7F77DD`
+- **Borders:** 0.5px, `var(--color-border-tertiary)` throughout — no heavy outlines
+- **Border radius:** `var(--border-radius-lg)` on section cards, `var(--border-radius-md)` on buttons and inputs, `20px` on pills/badges
+- **Spacing:** 28px horizontal page padding; 24px between major sections
+- **No animations required for MVP** — layout is static; framer-motion deferred to post-hackathon
 
 ---
 
