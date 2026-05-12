@@ -14,7 +14,7 @@ from .models import ContentRewriteResult, ClassificationResult, MeetingOverviewR
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 MODEL_NAME = os.getenv("OLLAMA_MODEL", "gemma4:26b")
-TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "30"))
+TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "180"))
 MAX_RETRIES = 2
 
 T = TypeVar("T", bound=BaseModel)
