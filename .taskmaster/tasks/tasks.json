@@ -9,9 +9,9 @@
         "testStrategy": "Unit tests with mocked Ollama responses for all 3 prompt types. Integration test with real Ollama instance processing sample LCPS text chunks. Verify JSON parsing handles edge cases (empty arrays, null values, truncated responses). Test retry logic with deliberately malformed responses.",
         "priority": "high",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [],
-        "updatedAt": "2026-05-12T23:16:00.137Z"
+        "updatedAt": "2026-05-12T23:21:15.317Z"
       },
       {
         "id": "2",
@@ -205,9 +205,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-12T23:16:00.138Z",
+      "lastModified": "2026-05-12T23:21:15.317Z",
       "taskCount": 15,
-      "completedCount": 0,
+      "completedCount": 1,
       "tags": [
         "master"
       ]
