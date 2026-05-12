@@ -42,7 +42,7 @@ async def run_tests() -> bool:
 
     print("=" * 60)
     print("View the Board — Gemma 4 Integration Test")
-    print(f"Model: {__import__('os').getenv('OLLAMA_MODEL', 'gemma4:4b')}")
+    print(f"Model: {__import__('os').getenv('OLLAMA_MODEL', 'gemma4:26b')}")
     print("=" * 60)
 
     # --- Prompt 1 ---
