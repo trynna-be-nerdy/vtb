@@ -80,16 +80,22 @@ async def run_tests() -> bool:
 
     # --- Prompt 3 ---
     print("\n[3/3] Prompt 3: Meeting Overview")
+    result3 = None
     try:
         result3 = await generate_meeting_overview([result1.summary, SECOND_SUMMARY])
-        print(f"  meeting_overview    : {result3.meeting_overview[:120]}...")
+    except Exception as exc:
+        import traceback
+        print(f"  FAIL — {type(exc).__name__}: {exc!r}")
+        traceback.print_exc()
+        passed = False
+
+    if result3 is not None:
+        overview_safe = result3.meeting_overview[:120].encode("ascii", "replace").decode()
+        print(f"  meeting_overview    : {overview_safe}...")
         print(f"  top_decisions       : {result3.top_decisions}")
         print(f"  fiscal_total        : {result3.fiscal_total}")
         print(f"  next_meeting_notes  : {result3.next_meeting_notes}")
         print("  PASS")
-    except Exception as exc:
-        print(f"  FAIL — {exc}")
-        passed = False
 
     print("\n" + "=" * 60)
     print("Result:", "ALL TESTS PASSED" if passed else "SOME TESTS FAILED")
