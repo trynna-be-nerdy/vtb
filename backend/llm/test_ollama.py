@@ -7,6 +7,10 @@ Requires Ollama running locally with gemma4:4b pulled.
 import asyncio
 import sys
 
+# Force UTF-8 output on Windows terminals that default to cp1252
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 from .ollama_client import rewrite_content, classify_content, generate_meeting_overview
 
 SAMPLE_CHUNK = """\
