@@ -2,31 +2,32 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
+        "id": "1",
         "title": "Set Up Gemma 4 Integration with Ollama and JSON Output Validation",
         "description": "Establish the Gemma 4 LLM integration via Ollama with robust JSON output parsing and retry logic. This is the critical unblock for the entire pipeline.",
         "details": "1. Create `backend/llm/ollama_client.py` with httpx async client to communicate with Ollama API at `http://localhost:11434/api`\n2. Implement the 3 Gemma 4 prompts as separate functions:\n   - `rewrite_content(chunk: str) -> ContentRewriteResult` (Prompt 1)\n   - `classify_content(summary: str) -> ClassificationResult` (Prompt 2)\n   - `generate_meeting_overview(summaries: list[str]) -> MeetingOverviewResult` (Prompt 3)\n3. Each prompt must instruct Gemma 4 to return ONLY valid JSON with no markdown/backticks/preamble\n4. Implement JSON parsing with retry logic (up to 2 retries on malformed output)\n5. Create Pydantic models for all response types with validation:\n   - `ContentRewriteResult`: title (max 10 words), summary (2-4 sentences), decisions[], action_items[], key_figures{amounts[], vote_tallies[], dates[], schools[]}\n   - `ClassificationResult`: primary_category (one of 12 slugs), secondary_tags[], urgency (routine|notable|significant), fiscal_impact (bool), affects_schools[]\n   - `MeetingOverviewResult`: meeting_overview, top_decisions[3], fiscal_total (nullable), next_meeting_notes (nullable)\n6. Add timeout handling (30 second max per call)\n7. Create test script that processes a real LCPS agenda item chunk and validates JSON output",
         "testStrategy": "Unit tests with mocked Ollama responses for all 3 prompt types. Integration test with real Ollama instance processing sample LCPS text chunks. Verify JSON parsing handles edge cases (empty arrays, null values, truncated responses). Test retry logic with deliberately malformed responses.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [],
+        "updatedAt": "2026-05-12T23:16:00.137Z"
       },
       {
-        "id": 2,
+        "id": "2",
         "title": "Build PDF Extractor and Agenda Item Chunker",
         "description": "Create the PDF text extraction pipeline using pdfplumber that splits documents into agenda item chunks suitable for Gemma 4 processing.",
         "details": "1. Create `backend/pipeline/pdf_extractor.py` using pdfplumber\n2. Implement `extract_text(pdf_path: Path) -> list[PageText]` that extracts text page-by-page\n3. Create `backend/pipeline/chunker.py` with agenda item detection logic:\n   - Detect agenda item headers (e.g., 'Item 5.A', 'Action Item', 'Consent Agenda')\n   - Split text on these headers while preserving context\n   - Cap each chunk at 2,000 characters\n   - Track page_range for each chunk (e.g., 'pp. 12-15')\n4. Define `Chunk` dataclass: text, page_start, page_end, detected_header, char_count\n5. Handle PDF edge cases: multi-column layouts, headers/footers, page numbers\n6. Create `backend/pipeline/downloader.py` using httpx:\n   - Download PDFs with browser-like headers\n   - Validate MIME type is application/pdf\n   - Save to temp directory with hash-based filename\n7. Test with real LCPS and Loudoun County PDFs (download samples manually for testing)",
         "testStrategy": "Unit tests with sample PDF files covering various formats (single column, multi-column, with headers). Test chunker produces chunks under 2,000 chars. Verify page range tracking is accurate. Test downloader with mock HTTP responses and real government PDF URLs.",
         "priority": "high",
         "dependencies": [
-          1
+          "1"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 3,
+        "id": "3",
         "title": "Initialize PostgreSQL Database Schema with Alembic Migrations",
         "description": "Set up PostgreSQL database with all required tables, relationships, indexes, and full-text search triggers using SQLAlchemy ORM and Alembic migrations.",
         "details": "1. Create `backend/db/models.py` with SQLAlchemy 2.0 models:\n   - `Source`: id, name, base_url, source_type (lcps|loudoun), scrape_config (JSONB)\n   - `SeenDocument`: id, url, sha256_hash, processing_status (pending|processing|completed|failed), first_seen_at, last_processed_at\n   - `Meeting`: id, source_id (FK), meeting_date, title, source_url, source_pdf_url, meeting_overview, top_decisions (ARRAY), fiscal_total, next_meeting_notes, total_items, fiscal_items, processing_status, created_at, updated_at\n   - `AgendaItem`: id, meeting_id (FK), title, summary, primary_category (12 enum values), secondary_tags (ARRAY), decisions (ARRAY), action_items (ARRAY), key_figures (JSONB), urgency (enum), fiscal_impact (bool), affects_schools (ARRAY), source_pdf_url, page_range, search_vector (TSVECTOR), created_at\n   - `SupportingDocument`: id, meeting_id (FK), title, url, file_type\n   - `PipelineRun`: id, started_at, completed_at, status, documents_processed, items_created, errors (JSONB)\n2. Create `backend/db/database.py` with async SQLAlchemy engine and session factory\n3. Set up Alembic with initial migration\n4. Create PostgreSQL trigger for auto-updating search_vector on agenda_items insert/update\n5. Add GIN index on search_vector for fast full-text search\n6. Create the 12 category enum type in PostgreSQL",
@@ -37,175 +38,179 @@
         "subtasks": []
       },
       {
-        "id": 4,
+        "id": "4",
         "title": "Implement Web Scrapers for LCPS and Loudoun County Sources",
         "description": "Build scrapers to discover and fetch meeting documents from lcps.org (BeautifulSoup4) and loudoun.gov (Legistar JSON API).",
         "details": "1. Create `backend/pipeline/scrapers/base.py` with abstract `BaseScraper` class:\n   - `discover_documents() -> list[DocumentInfo]`\n   - `fetch_document(url: str) -> bytes`\n   - Rate limiting: 4-second delay between requests, never parallel\n   - Browser-like headers (User-Agent, Accept, etc.)\n2. Create `backend/pipeline/scrapers/lcps_scraper.py`:\n   - Navigate lcps.org BoardDocs interface\n   - Find meeting agendas and attachments\n   - Extract meeting date, title, PDF URLs\n   - Use BeautifulSoup4 for HTML parsing\n3. Create `backend/pipeline/scrapers/loudoun_scraper.py`:\n   - Use Legistar JSON API (structured data, no HTML scraping)\n   - Fetch Board of Supervisors, Planning Commission meetings\n   - Map API responses to DocumentInfo dataclass\n4. Create `backend/pipeline/scrapers/playwright_fallback.py` for JS-heavy pages:\n   - Headless browser fallback if basic requests blocked\n   - Only activated if initial scrape fails\n5. Implement deduplication in `backend/pipeline/deduplicator.py`:\n   - Check URL against seen_documents table\n   - Compute SHA-256 hash of PDF content\n   - Skip if URL+hash match exists with completed status\n6. Define `DocumentInfo` dataclass: url, pdf_url, title, meeting_date, board_type, sha256_hash",
         "testStrategy": "Integration tests against live lcps.org and loudoun.gov (with rate limiting). Mock tests for unit testing scraper logic. Verify deduplication correctly skips already-processed documents. Test Playwright fallback triggers when needed. Validate all discovered documents have required metadata.",
         "priority": "high",
         "dependencies": [
-          3
+          "3"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 5,
+        "id": "5",
         "title": "Build Complete Pipeline Worker with APScheduler",
         "description": "Create the standalone pipeline worker process that orchestrates scraping, PDF extraction, Gemma 4 processing, and database writes on a 6-hour schedule.",
         "details": "1. Create `backend/pipeline/worker.py` as the main entry point:\n   - APScheduler with IntervalTrigger(hours=6)\n   - Run as separate process from FastAPI server\n   - Never block on LLM calls\n2. Implement full pipeline flow in `backend/pipeline/processor.py`:\n   - Step 1: Run all scrapers, collect new documents\n   - Step 2: Deduplicate against seen_documents\n   - Step 3: Download PDFs, validate MIME types\n   - Step 4: Extract text with pdfplumber\n   - Step 5: Chunk into agenda items\n   - Step 6: For each chunk, call Gemma 4 Prompt 1 (content rewrite)\n   - Step 7: For each rewritten summary, call Gemma 4 Prompt 2 (classification)\n   - Step 8: Run 10 quality validation checks before DB write\n   - Step 9: Atomic PostgreSQL transaction to insert meeting + agenda_items\n   - Step 10: After all chunks processed, call Gemma 4 Prompt 3 (meeting overview)\n   - Step 11: Update meeting record with overview\n3. Create `backend/pipeline/validator.py` with 10 quality checks:\n   - Title not empty, under 100 chars\n   - Summary between 50-500 chars\n   - primary_category is valid slug\n   - urgency is valid enum\n   - Decisions array not empty for non-routine items\n   - Key figures amounts are valid currency strings\n   - Vote tallies match pattern (e.g., '5-2')\n   - No duplicate agenda items in same meeting\n   - Page range format valid\n   - Source PDF URL is valid URL\n4. Log all pipeline runs to pipeline_runs table\n5. Handle errors gracefully: mark documents as failed, continue with next",
         "testStrategy": "End-to-end test with mock scrapers and real Gemma 4. Test APScheduler triggers correctly. Verify atomic transactions rollback on validation failure. Test error handling doesn't crash worker. Verify pipeline_runs table logs all executions.",
         "priority": "high",
         "dependencies": [
-          1,
-          2,
-          3,
-          4
+          "1",
+          "2",
+          "3",
+          "4"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 6,
+        "id": "6",
         "title": "Create FastAPI REST API with Redis Caching",
         "description": "Build the FastAPI application with all required REST endpoints, Redis caching with 15-minute TTL, and proper error handling.",
         "details": "1. Create `backend/api/main.py` with FastAPI app initialization\n2. Set up async Redis client using redis-py with Upstash connection string\n3. Implement cache decorator with 15-minute TTL for read endpoints\n4. Create `backend/api/routes/meetings.py`:\n   - GET `/api/meetings`: Paginated list (20 per page), newest first, returns meeting summaries\n   - GET `/api/meetings/{id}`: Full meeting with all agenda items and supporting documents\n5. Create `backend/api/routes/categories.py`:\n   - GET `/api/categories`: All 12 categories with item counts\n   - GET `/api/categories/{slug}`: Paginated agenda items for one category\n6. Create `backend/api/routes/search.py`:\n   - GET `/api/search?q=`: PostgreSQL full-text search across title, summary, decisions\n   - Use ts_rank for relevance scoring\n   - Return paginated results with highlights\n7. Create `backend/api/routes/health.py`:\n   - GET `/api/health`: Pipeline status, last run time, queue depth, DB connection status\n8. Create `backend/api/routes/pipeline.py`:\n   - POST `/api/pipeline/trigger`: Manually trigger pipeline run (API key auth via header)\n9. Add Pydantic response models for all endpoints\n10. Configure CORS for Vercel frontend domain\n11. Add uvicorn server configuration",
         "testStrategy": "Unit tests for all endpoints with mocked database. Integration tests with real PostgreSQL and Redis. Test pagination edge cases. Verify cache hit/miss behavior. Test full-text search returns relevant results with ranking. Load test to ensure <2 second response times.",
         "priority": "high",
         "dependencies": [
-          3
+          "3"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 7,
+        "id": "7",
         "title": "Implement WebSocket Real-time Updates with Redis Pub/Sub",
         "description": "Add WebSocket endpoint for live updates and Redis Pub/Sub for broadcasting new content across multiple FastAPI instances.",
         "details": "1. Create `backend/api/routes/websocket.py`:\n   - WS `/ws/updates`: WebSocket endpoint for real-time notifications\n   - Handle connection lifecycle (connect, disconnect, errors)\n   - Maintain set of active connections per server instance\n2. Create `backend/pubsub/broadcaster.py`:\n   - Redis Pub/Sub subscriber that listens for new content events\n   - On message received, broadcast to all local WebSocket connections\n   - Message format: {type: 'new_item', meeting_id, item_id, title, category, timestamp}\n3. Modify pipeline processor to publish events:\n   - After successful DB write, publish to Redis channel 'vtb:updates'\n   - Include minimal item info for toast notification\n4. Create `backend/pubsub/publisher.py`:\n   - `publish_new_item(meeting_id, item_id, title, category)`\n   - Called by pipeline after each agenda item inserted\n5. Handle Redis connection failures gracefully (log, don't crash)\n6. Add connection heartbeat/ping to detect stale WebSocket connections",
         "testStrategy": "Test WebSocket connection establishment and message delivery. Verify Redis Pub/Sub broadcasts to multiple connected clients. Test reconnection logic after Redis failure. Verify message format matches frontend expectations. Load test with 100 concurrent WebSocket connections.",
         "priority": "medium",
         "dependencies": [
-          5,
-          6
+          "5",
+          "6"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 8,
+        "id": "8",
         "title": "Build Next.js Frontend with Homepage and Board Sections",
         "description": "Create the Next.js 14 frontend application with the homepage layout exactly matching ViewTheBoard_v4.html, including navbar, intro section, and all four board sections.",
         "details": "1. Initialize Next.js 14 project with App Router in `frontend/`:\n   - TypeScript configuration\n   - Tailwind CSS v3 setup\n   - HeroUI v2 + shadcn/ui component libraries\n   - TanStack Query for data fetching\n   - Lucide React for icons\n2. Create `frontend/app/layout.tsx`:\n   - CSS custom properties for theme (from ViewTheBoard_v4.html)\n   - Dark/light mode support via host theme\n   - Georgia serif font for titles, Inter/system-ui for UI text\n3. Create `frontend/components/Navbar.tsx`:\n   - Sticky with scroll-hide behavior (requestAnimationFrame)\n   - Site wordmark 'View the Board'\n   - Search pill that links to /search\n4. Create `frontend/components/IntroSection.tsx`:\n   - Title: 'What Loudoun County decided this week'\n   - Date block with large day number + month/year + day-of-week\n   - 'View Calendar' button\n   - Activity Log component with status pills\n5. Create `frontend/components/BoardSection.tsx`:\n   - Reusable for all 4 boards with props for dot color, name, description\n   - 3-column card grid (4-column for Advisory section)\n   - Cards with date, urgency badge, serif title, summary, topic tags\n6. Create `frontend/app/page.tsx`:\n   - Fetch meetings data from API using TanStack Query\n   - Render all 4 board sections with ISR (revalidate: 60)\n7. Apply exact styling from ViewTheBoard_v4.html:\n   - 0.5px borders, border-radius-lg on cards\n   - 28px horizontal padding, 24px section gaps\n   - Badge colors for urgency levels\n   - Board dot colors: teal, amber, blue, purple",
         "testStrategy": "Visual regression tests comparing to ViewTheBoard_v4.html. Test responsive layout at 375px mobile width. Verify TanStack Query caching and refetching. Test scroll-hide navbar behavior. Verify all CSS custom properties apply correctly in both themes.",
         "priority": "high",
         "dependencies": [
-          6
+          "6"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 9,
+        "id": "9",
         "title": "Build Meeting Detail Page and Search Page",
         "description": "Create the meeting detail page with expandable agenda items and the search page with full-text search functionality.",
         "details": "1. Create `frontend/app/meetings/[id]/page.tsx`:\n   - Fetch full meeting data with agenda items from `/api/meetings/{id}`\n   - Meeting overview section (Gemma 4 Prompt 3 output)\n   - Quick stats bar: item count, fiscal items, total spending\n   - Top 3 decisions highlighted cards\n   - Expandable accordion for each agenda item:\n     * Collapsed: title + urgency badge\n     * Expanded: full summary, decisions list, action items, page reference, source PDF link\n   - Supporting documents section with download links\n2. Create `frontend/components/AgendaItemAccordion.tsx`:\n   - HeroUI/shadcn accordion component\n   - Smooth expand/collapse (framer-motion optional for MVP)\n   - PDF link opens in new tab\n3. Create `frontend/app/search/page.tsx`:\n   - Search input with 400ms debounce\n   - Call `/api/search?q=` endpoint\n   - Display ranked results with title, summary excerpt, category tags\n   - Highlight matching terms in results\n   - Empty state for no results\n4. Create `frontend/components/SearchInput.tsx`:\n   - Debounced input using lodash.debounce or custom hook\n   - Clear button\n   - Loading state indicator\n5. Update navbar search pill to navigate to /search page\n6. Add proper meta tags and Open Graph for SEO",
         "testStrategy": "Test meeting detail page renders all sections correctly. Verify accordion expand/collapse works. Test search debouncing only fires after 400ms pause. Verify search results are ranked by relevance. Test empty states and loading states. Mobile responsiveness tests.",
         "priority": "medium",
         "dependencies": [
-          8
+          "8"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 10,
+        "id": "10",
         "title": "Add WebSocket Live Updates and Toast Notifications",
         "description": "Implement WebSocket client connection in the frontend with toast notifications when new content is published by the pipeline.",
         "details": "1. Create `frontend/hooks/useWebSocket.ts`:\n   - Connect to `/ws/updates` endpoint\n   - Handle connection, disconnection, reconnection with exponential backoff\n   - Parse incoming messages as typed events\n   - Return connection status and latest message\n2. Create `frontend/components/LiveUpdateToast.tsx`:\n   - Toast notification component using HeroUI/shadcn toast\n   - Show when new agenda item is published\n   - Display: item title, category, 'View' link\n   - Auto-dismiss after 5 seconds\n   - Stack multiple toasts if several arrive quickly\n3. Create `frontend/providers/WebSocketProvider.tsx`:\n   - Context provider wrapping the app\n   - Initialize WebSocket connection on mount\n   - Provide connection status to children\n4. Update `frontend/app/layout.tsx`:\n   - Wrap app with WebSocketProvider\n   - Add Toaster component at root level\n5. Optional: Show connection status indicator in navbar (connected/disconnected)\n6. Handle WebSocket URL configuration for dev vs production (localhost vs Render)",
         "testStrategy": "Test WebSocket connects successfully and reconnects after disconnect. Verify toast appears when server sends message. Test toast auto-dismissal timing. Verify multiple toasts stack correctly. Test production WebSocket URL works through ngrok/Render.",
         "priority": "medium",
         "dependencies": [
-          7,
-          8
+          "7",
+          "8"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 11,
+        "id": "11",
         "title": "Create Docker Compose Configuration for Local Development",
         "description": "Set up Docker Compose to run PostgreSQL, Redis, FastAPI backend, and pipeline worker with a single command for hackathon judges.",
         "details": "1. Create `docker-compose.yml` at project root:\n   - PostgreSQL 16 service with health check, volume for data persistence\n   - Redis service with health check\n   - FastAPI backend service (depends_on: postgres, redis)\n   - Pipeline worker service (depends_on: postgres, redis)\n   - Shared network for all services\n2. Create `backend/Dockerfile`:\n   - Python 3.11 slim base image\n   - Install dependencies from requirements.txt\n   - Copy backend code\n   - Run uvicorn for API or worker.py for pipeline\n3. Create `backend/requirements.txt` with all Python dependencies:\n   - fastapi, uvicorn, sqlalchemy, alembic, pydantic\n   - httpx, beautifulsoup4, pdfplumber\n   - apscheduler, redis, asyncpg\n   - playwright (optional, for fallback scraping)\n4. Create `.env.example` with all required environment variables:\n   - DATABASE_URL, REDIS_URL, OLLAMA_URL\n   - API_KEY for pipeline trigger\n5. Create `scripts/init-db.sh`:\n   - Wait for PostgreSQL to be ready\n   - Run Alembic migrations\n   - Seed sources table with lcps.org and loudoun.gov configs\n6. Update docker-compose to run init script on first startup\n7. Document the three-command startup in README:\n   - `ollama pull gemma4:4b`\n   - `docker compose up`\n   - `cd frontend && npm run dev`",
         "testStrategy": "Test `docker compose up` starts all services successfully. Verify services can communicate (API can reach DB/Redis). Test Alembic migrations run on fresh database. Verify pipeline worker can connect to Ollama on host. Test full flow: scrape → process → API returns data.",
         "priority": "high",
         "dependencies": [
-          5,
-          6,
-          7
+          "5",
+          "6",
+          "7"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 12,
+        "id": "12",
         "title": "Add Official Sources Section, Footer, and Newsletter Components",
         "description": "Complete the frontend with the remaining sections from ViewTheBoard_v4.html: Official Sources cards, About/Stats card, Newsletter signup, and site footer.",
         "details": "1. Create `frontend/components/OfficialSources.tsx`:\n   - Section divider with 'Official sources' label\n   - 3-column resources-grid\n   - Resource cards: Loudoun County portal, LCPS BoardDocs, 'How to speak' guide\n   - Each card: eyebrow, title, description, CTA link\n2. Create `frontend/components/AboutStats.tsx`:\n   - Full-width card with app description on left\n   - Stats on right: 'Last updated' timestamp, 'Items this month' count\n   - Fetch stats from `/api/health` endpoint\n3. Create `frontend/components/Newsletter.tsx`:\n   - Section divider: 'Stay informed'\n   - Title: 'Get a weekly digest in your inbox'\n   - Subtitle about Sunday delivery\n   - Email input + Subscribe button (UI only for MVP, no backend)\n4. Create `frontend/components/Footer.tsx`:\n   - Left: About, Data sources, AI transparency, Contact links\n   - Right: Disclaimer text about Gemma 4 and not affiliated with county\n5. Update `frontend/app/page.tsx` to include all sections in order:\n   - Navbar → Intro → 4 Board Sections → Official Sources → About/Stats → Newsletter → Footer\n6. Ensure all styling matches ViewTheBoard_v4.html exactly:\n   - Content divider lines, label positioning\n   - Card borders, padding, typography",
         "testStrategy": "Visual comparison to ViewTheBoard_v4.html for all new sections. Test external links open correctly. Verify stats display real data from health endpoint. Test newsletter form validation (email format). Responsive layout tests at 375px width.",
         "priority": "medium",
         "dependencies": [
-          8
+          "8"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 13,
+        "id": "13",
         "title": "Implement Cache Invalidation and Pipeline-to-Frontend Sync",
         "description": "Add Redis cache invalidation when pipeline writes new data to ensure frontend always shows fresh content.",
         "details": "1. Update `backend/pipeline/processor.py` to invalidate cache after DB writes:\n   - Delete Redis keys for affected endpoints:\n     * `vtb:meetings:list:*` (all paginated meeting lists)\n     * `vtb:meetings:{id}` (specific meeting detail)\n     * `vtb:categories:list` (category counts)\n     * `vtb:categories:{slug}:*` (category feeds)\n2. Create `backend/cache/invalidator.py`:\n   - `invalidate_meeting(meeting_id: int)` - clears meeting-specific keys\n   - `invalidate_category(slug: str)` - clears category feed keys\n   - `invalidate_all_lists()` - clears all paginated list caches\n3. Update API cache decorator to use consistent key naming:\n   - Format: `vtb:{resource}:{id}:{params_hash}`\n4. Add cache key prefix configuration for multi-environment support\n5. Implement cache warming after invalidation (optional optimization):\n   - Pre-fetch most common queries after pipeline run\n6. Add logging for cache invalidation events for debugging",
         "testStrategy": "Test cache is invalidated after pipeline inserts new meeting. Verify API returns fresh data immediately after invalidation. Test specific meeting cache cleared when that meeting is updated. Monitor Redis key count before/after invalidation.",
         "priority": "medium",
         "dependencies": [
-          5,
-          6
+          "5",
+          "6"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 14,
+        "id": "14",
         "title": "Write README Documentation and Kaggle Notebook",
         "description": "Create comprehensive README with setup instructions, architecture diagram, and prepare the Kaggle Notebook technical write-up for hackathon submission.",
         "details": "1. Create `README.md` with sections:\n   - Project overview and one-line description\n   - Problem statement and solution\n   - Architecture diagram (ASCII or linked image)\n   - Tech stack table\n   - Quick start guide (the 3 commands)\n   - Environment variables documentation\n   - API endpoints documentation\n   - Database schema overview\n   - Gemma 4 prompts explanation\n   - Quality metrics and how they're measured\n   - Out of scope items\n   - License and attribution\n2. Create `KAGGLE_NOTEBOOK.md` (or .ipynb) for technical write-up:\n   - Introduction to the Digital Equity track challenge\n   - Detailed explanation of Gemma 4 prompt engineering\n   - Pipeline architecture walkthrough\n   - Sample input/output examples\n   - Performance metrics and accuracy analysis\n   - Challenges faced and solutions\n   - Future improvements\n3. Add screenshots or GIFs of the working application\n4. Include demo video link (to be recorded after implementation)\n5. Add hackathon submission checklist",
         "testStrategy": "Review README follows Kaggle submission guidelines. Verify all setup instructions work on a clean machine. Test all documented commands execute successfully. Have someone unfamiliar with project follow README to run the app.",
         "priority": "medium",
         "dependencies": [
-          11
+          "11"
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 15,
+        "id": "15",
         "title": "Deploy to Vercel (Frontend) and Render (Backend) with Production Configuration",
         "description": "Configure production deployment for the Next.js frontend on Vercel and FastAPI backend on Render free tier with managed PostgreSQL and Redis.",
         "details": "1. Configure Vercel deployment:\n   - Connect GitHub repository\n   - Set root directory to `frontend/`\n   - Configure environment variables (API URL, WS URL)\n   - Enable ISR with appropriate revalidation times\n   - Set up custom domain if available\n2. Configure Render deployment:\n   - Create Web Service for FastAPI backend\n   - Create Background Worker for pipeline\n   - Set up Render PostgreSQL managed database\n   - Use Upstash Redis (serverless) for cache\n   - Configure all environment variables\n   - Set health check endpoint to `/api/health`\n3. Set up ngrok tunnel for local Ollama:\n   - Pipeline worker on Render needs to reach local Ollama\n   - Document ngrok setup in README\n   - Alternative: Run pipeline locally, only deploy API to Render\n4. Configure CORS on FastAPI for Vercel domain\n5. Set up GitHub Actions for CI/CD:\n   - Run tests on PR\n   - Auto-deploy to Vercel/Render on main merge\n6. Add production environment variable documentation",
         "testStrategy": "Verify Vercel deployment serves frontend correctly. Test API endpoints work through Render URL. Verify WebSocket connects from Vercel to Render. Test full flow: pipeline runs, data appears on Vercel frontend. Load test production endpoints.",
         "priority": "medium",
         "dependencies": [
-          8,
-          11
+          "8",
+          "11"
         ],
         "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2026-05-12T22:46:20.411Z",
-      "updated": "2026-05-12T22:46:20.411Z",
-      "description": "Tasks for master context"
+      "version": "1.0.0",
+      "lastModified": "2026-05-12T23:16:00.138Z",
+      "taskCount": 15,
+      "completedCount": 0,
+      "tags": [
+        "master"
+      ]
     }
   }
 }
