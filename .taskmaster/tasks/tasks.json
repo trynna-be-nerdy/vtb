@@ -137,7 +137,63 @@
           "1"
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create PDF Downloader Module with httpx",
+            "description": "Implement backend/pipeline/downloader.py to download PDF files from government websites with proper headers and validation.",
+            "dependencies": [],
+            "details": "Create backend/pipeline/__init__.py and backend/pipeline/downloader.py. Implement async download_pdf(url: str) -> Path function using httpx with browser-like User-Agent headers. Validate MIME type is application/pdf. Generate hash-based filename using hashlib.sha256(url.encode()).hexdigest()[:16]. Save to temp directory using tempfile.gettempdir(). Include timeout handling and retry logic with exponential backoff. Add DownloadError exception class for error handling. Follow httpx async patterns established in backend/llm/ollama_client.py.",
+            "status": "pending",
+            "testStrategy": "Unit tests with mocked httpx responses for successful download, invalid MIME type rejection, timeout handling, and retry behavior. Integration test with real government PDF URL to verify download works end-to-end."
+          },
+          {
+            "id": 2,
+            "title": "Create PDF Text Extractor with pdfplumber",
+            "description": "Implement backend/pipeline/pdf_extractor.py to extract text page-by-page from PDF documents using pdfplumber library.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create backend/pipeline/pdf_extractor.py with PageText dataclass containing: page_num (int), text (str), char_count (int). Implement extract_text(pdf_path: Path) -> list[PageText] function using pdfplumber.open(). Handle multi-column layouts by extracting with default settings (pdfplumber handles this reasonably). Strip headers/footers by filtering lines that appear on multiple pages with same content. Handle PDF edge cases: empty pages, scanned images (return empty text), encrypted PDFs (raise PdfExtractionError). Add logging for extraction progress using Python logging module.",
+            "status": "pending",
+            "testStrategy": "Unit tests with sample PDF files covering single-column, multi-column layouts, PDFs with headers/footers, empty pages, and edge cases. Verify page numbering is accurate and text extraction preserves readable content."
+          },
+          {
+            "id": 3,
+            "title": "Create Chunk Dataclass and Chunker Module",
+            "description": "Implement backend/pipeline/chunker.py with Chunk dataclass and agenda item detection logic to split extracted text into processable chunks.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create backend/pipeline/chunker.py with Chunk dataclass containing: text (str), page_start (int), page_end (int), detected_header (Optional[str]), char_count (int). Implement chunk_text(pages: list[PageText]) -> list[Chunk] function. Create regex patterns to detect agenda item headers: r'(?:Item|ITEM)\\s*\\d+\\.?[A-Z]?', r'(?:Action|ACTION)\\s+(?:Item|ITEM)', r'(?:Consent|CONSENT)\\s+(?:Agenda|AGENDA)', r'(?:PUBLIC|CITIZEN)\\s+(?:HEARING|COMMENT)'. Split text on detected headers while preserving 200 chars of context before each split. Cap each chunk at 2,000 characters, splitting mid-chunk if needed. Track page_range (page_start, page_end) for each chunk based on source PageText objects.",
+            "status": "pending",
+            "testStrategy": "Unit tests with sample government meeting text containing various agenda header formats. Verify chunks are under 2,000 chars, page ranges are accurate, detected_header captures the correct pattern, and context is preserved across splits."
+          },
+          {
+            "id": 4,
+            "title": "Implement Pipeline Coordinator Function",
+            "description": "Create the main pipeline coordinator that orchestrates download, extraction, and chunking into a single async workflow.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Add process_pdf(url: str) -> list[Chunk] async function to backend/pipeline/__init__.py. This function: 1) Downloads PDF using downloader.download_pdf(), 2) Extracts text using pdf_extractor.extract_text(), 3) Chunks text using chunker.chunk_text(), 4) Cleans up temp file after processing. Add ProcessingResult dataclass with: chunks (list[Chunk]), source_url (str), page_count (int), total_chars (int). Handle errors at each stage with appropriate logging and cleanup. Integrate with SeenDocument model from backend/db/models.py to check if URL was already processed using sha256 hash.",
+            "status": "pending",
+            "testStrategy": "Integration tests verifying full pipeline from URL to chunks. Test error handling at each stage (download fail, extraction fail, chunking fail). Verify temp files are cleaned up. Test deduplication logic with SeenDocument."
+          },
+          {
+            "id": 5,
+            "title": "Add Sample PDFs and Comprehensive Unit Tests",
+            "description": "Download sample LCPS and Loudoun County PDFs for testing and create comprehensive test suite for the entire pipeline module.",
+            "dependencies": [
+              4
+            ],
+            "details": "Create backend/pipeline/tests/ directory with test_downloader.py, test_pdf_extractor.py, test_chunker.py, and test_pipeline.py. Download 2-3 real government meeting PDFs from LCPS (lcps.org) and Loudoun County (loudoun.gov) board meetings, save as test fixtures in backend/pipeline/tests/fixtures/. Tests should cover: various PDF formats, edge cases (empty pages, scanned content), chunker header detection accuracy, chunk size limits, page range tracking, and full pipeline integration. Use pytest with pytest-asyncio for async tests. Mock httpx in downloader tests to avoid network calls in unit tests.",
+            "status": "pending",
+            "testStrategy": "Run pytest backend/pipeline/tests/ to verify all tests pass. Ensure test coverage includes edge cases documented in task details. Integration tests with real PDFs verify production readiness."
+          }
+        ]
       },
       {
         "id": 3,
