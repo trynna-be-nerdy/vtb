@@ -8,13 +8,23 @@ import os
 from typing import TypeVar, Type
 
 import httpx
+import httpx as _httpx  # noqa: F811 — used below for Timeout
 from pydantic import BaseModel, ValidationError
 
 from .models import ContentRewriteResult, ClassificationResult, MeetingOverviewResult
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 MODEL_NAME = os.getenv("OLLAMA_MODEL", "gemma4:26b")
-TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "600"))
+# Connect timeout stays short; read timeout is None (no limit) because local
+# Ollama takes as long as it needs — especially the 26B model on CPU layers.
+_CONNECT_TIMEOUT = float(os.getenv("OLLAMA_CONNECT_TIMEOUT", "10"))
+_READ_TIMEOUT = None  # override via OLLAMA_READ_TIMEOUT env var (seconds float)
+if _rt := os.getenv("OLLAMA_READ_TIMEOUT"):
+    _READ_TIMEOUT = float(_rt)
+
+import httpx as _httpx
+_TIMEOUT = _httpx.Timeout(connect=_CONNECT_TIMEOUT, read=_READ_TIMEOUT, write=30, pool=5)
+
 MAX_RETRIES = 2
 
 T = TypeVar("T", bound=BaseModel)
