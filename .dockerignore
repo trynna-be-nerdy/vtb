@@ -1,0 +1,13 @@
+.git
+.taskmaster
+git-auto-commit
+__pycache__
+*.pyc
+*.pyo
+.env
+.env.*
+*.log
+node_modules
+.vscode
+.idea
+alembic/versions/__pycache__
