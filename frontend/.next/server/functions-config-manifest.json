@@ -1,1 +1,0 @@
-{"version":1,"functions":{"/api/health":{},"/api/categories":{},"/api/meetings":{},"/api/categories/[slug]":{},"/api/search":{},"/api/meetings/[id]":{},"/api/updates":{},"/api/pipeline/trigger":{},"/":{}}}
