@@ -60,8 +60,8 @@ export default async function HomePage() {
             ))}
           </div>
 
-        {/* Official sources + newsletter */}
-        <div className="content-section">
+          {/* Official sources + newsletter */}
+          <div className="content-section">
           <div className="content-divider">
             <div className="content-divider-line" />
             <div className="content-divider-label">Official sources</div>
@@ -167,7 +167,7 @@ export default async function HomePage() {
           </div>
 
           <NewsletterForm />
-        </div>
+          </div>
         </div>
       </div>
 
