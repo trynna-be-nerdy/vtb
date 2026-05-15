@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getHealth } from '@/lib/data'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
