@@ -35,7 +35,9 @@ export default async function HomePage() {
       <Navbar />
 
       <div className="site-container">
-        <IntroSection recentMeetings={recentMeetingsData} />
+        <div className="intro-wrapper">
+          <IntroSection recentMeetings={recentMeetingsData} />
+        </div>
 
         <div className="main">
           {BOARD_CONFIGS.map((board, i) => (

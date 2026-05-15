@@ -1446,10 +1446,15 @@ body {
 }
 
 /* ── INTRO ── */
+.intro-wrapper {
+  padding: 24px 28px 0;
+}
 .intro {
-  padding: 32px 28px 28px;
+  padding: 24px 20px 24px;
   background: var(--color-background-primary);
-  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
 }
 .intro-title {
   font-family: var(--font-serif);
@@ -1505,7 +1510,7 @@ body {
 /* ── ACTIVITY LOG ── */
 .activity-log {
   border-top: 0.5px solid var(--color-border-tertiary);
-  margin-top: 24px;
+  margin-top: 20px;
   padding-top: 14px;
 }
 .activity-log-label {
