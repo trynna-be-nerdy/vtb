@@ -31,9 +31,9 @@ function stripBoilerplate(text: string, numPages: number): string {
 
   const threshold = Math.max(2, Math.floor(numPages * 0.6))
   const boilerplate = new Set<string>()
-  for (const [line, count] of lineCounts) {
+  lineCounts.forEach((count, line) => {
     if (count >= threshold) boilerplate.add(line)
-  }
+  })
 
   if (boilerplate.size === 0) return text
   return lines

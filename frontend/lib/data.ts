@@ -332,7 +332,7 @@ export async function insertAgendaItem(item: {
     ) VALUES (
       ${item.meeting_id}, ${item.title}, ${item.summary},
       ${sql.array(item.decisions)}, ${sql.array(item.action_items)},
-      ${sql.json(item.key_figures)},
+      ${sql.json(item.key_figures as Parameters<typeof sql.json>[0])},
       ${item.primary_category}, ${sql.array(item.secondary_tags)},
       ${item.urgency}, ${item.fiscal_impact}, ${sql.array(item.affects_schools)},
       ${item.source_pdf_url ?? null}, ${item.page_range ?? null}
