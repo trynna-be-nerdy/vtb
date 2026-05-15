@@ -502,6 +502,9 @@ video {
 [hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
+.sticky {
+  position: sticky;
+}
 .flex {
   display: flex;
 }
