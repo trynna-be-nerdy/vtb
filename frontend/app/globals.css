@@ -64,7 +64,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  /* Only animate transform — opacity caused repaint flicker */
+  transition: transform 0.22s ease;
+  will-change: transform;
 }
 .nav-inner {
   max-width: 780px;
@@ -78,7 +80,6 @@ body {
 }
 .nav.hidden {
   transform: translateY(-100%);
-  opacity: 0;
 }
 .nav-logo {
   font-size: 16px;
@@ -645,14 +646,22 @@ body {
 .site-footer {
   border-top: 0.5px solid var(--color-border-tertiary);
   background: var(--color-background-primary);
-  padding: 20px 28px;
+  padding: 18px 0;
+}
+.site-footer-inner {
+  max-width: 780px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 28px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 .footer-links {
   display: flex;
   gap: 20px;
+  flex-shrink: 0;
 }
 .footer-link-item {
   font-size: 12px;
@@ -661,6 +670,13 @@ body {
 }
 .footer-link-item:hover {
   color: var(--color-text-primary);
+}
+/* Thin divider between nav links and copyright */
+.footer-divider {
+  width: 1px;
+  height: 12px;
+  background: var(--color-border-secondary);
+  flex-shrink: 0;
 }
 .footer-copy {
   font-size: 11px;
