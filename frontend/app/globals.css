@@ -891,3 +891,42 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
 }
+
+/* ─────────────────────────────────────────────────────
+   DARK MODE — DaisyUI badge + btn colours adapt via
+   CSS var overrides (DaisyUI theme stays "vtb" light;
+   we patch just the HSL channel vars it reads from)
+   ───────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  /* DaisyUI reads --er (error), --wa (warning), --su (success), --b2 (base-2) as HSL triples */
+  [data-theme="vtb"] {
+    --er: 0 60% 40%;           /* muted red for dark bg */
+    --erc: 0 100% 90%;
+    --wa: 38 60% 45%;          /* muted amber */
+    --wac: 38 100% 90%;
+    --su: 152 50% 38%;         /* muted teal */
+    --suc: 152 100% 88%;
+    --b1: 0 0% 11%;            /* base-100 → dark bg */
+    --b2: 0 0% 17%;            /* base-200 */
+    --b3: 0 0% 7%;             /* base-300 */
+    --bc: 0 0% 96%;            /* base-content → text */
+    --n: 0 0% 11%;             /* neutral */
+    --nc: 0 0% 96%;
+  }
+
+  /* btn-neutral uses --n / --nc */
+  .btn-neutral {
+    background: #374151;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+  .btn-neutral:hover {
+    background: #4b5563;
+    border-color: #4b5563;
+  }
+
+  /* DaisyUI join input border in dark mode */
+  .input-bordered {
+    border-color: var(--color-border-secondary);
+  }
+}
