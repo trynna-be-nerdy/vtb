@@ -6,7 +6,7 @@
  * or disable the default devtool with "devtool: false".
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
-(self["webpackChunk_N_E"] = self["webpackChunk_N_E"] || []).push([["app/page"],{
+self["webpackHotUpdate_N_E"]("app/page",{
 
 /***/ "(app-pages-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-client-entry-loader.js?modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CAccordion.tsx%22%2C%22ids%22%3A%5B%22DecisionsAccordion%22%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CNavbar.tsx%22%2C%22ids%22%3A%5B%22Navbar%22%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CScrollReveal.tsx%22%2C%22ids%22%3A%5B%22ScrollReveal%22%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CSidebar.tsx%22%2C%22ids%22%3A%5B%22Sidebar%22%5D%7D&server=false!":
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
@@ -381,11 +381,4 @@ eval(__webpack_require__.ts("\n\nif (false) {} else {\n  module.exports = __webp
 
 /***/ })
 
-},
-/******/ function(__webpack_require__) { // webpackRuntimeModules
-/******/ var __webpack_exec__ = function(moduleId) { return __webpack_require__(__webpack_require__.s = moduleId); }
-/******/ __webpack_require__.O(0, ["main-app"], function() { return __webpack_exec__("(app-pages-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-client-entry-loader.js?modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CAccordion.tsx%22%2C%22ids%22%3A%5B%22DecisionsAccordion%22%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CNavbar.tsx%22%2C%22ids%22%3A%5B%22Navbar%22%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CScrollReveal.tsx%22%2C%22ids%22%3A%5B%22ScrollReveal%22%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Csriva%5C%5Cvtb%5C%5Cfrontend%5C%5Ccomponents%5C%5CSidebar.tsx%22%2C%22ids%22%3A%5B%22Sidebar%22%5D%7D&server=false!"); });
-/******/ var __webpack_exports__ = __webpack_require__.O();
-/******/ _N_E = __webpack_exports__;
-/******/ }
-]);
+});

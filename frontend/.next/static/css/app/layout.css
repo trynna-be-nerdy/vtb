@@ -584,18 +584,6 @@ html {
     --tw-text-opacity: 1;
     color: hsl(var(--bc) / var(--tw-text-opacity));
   }
-
-  .table tr.hover:hover,
-  .table tr.hover:nth-child(even):hover {
-    --tw-bg-opacity: 1;
-    background-color: hsl(var(--b2) / var(--tw-bg-opacity));
-  }
-
-  .table-zebra tr.hover:hover,
-  .table-zebra tr.hover:nth-child(even):hover {
-    --tw-bg-opacity: 1;
-    background-color: hsl(var(--b3) / var(--tw-bg-opacity));
-  }
 }
 .btn {
   display: inline-flex;
@@ -1400,11 +1388,20 @@ body {
   padding-top: 54px; /* offset for fixed navbar */
 }
 
+/* ── PAGE LAYOUT (sidebar + main) ── */
+.page-layout {
+  display: flex;
+  max-width: 1080px;
+  margin: 0 auto;
+  align-items: flex-start;
+  min-height: calc(100vh - 54px);
+}
+
 /* ── CENTERED CONTAINER ── */
 .site-container {
+  flex: 1;
+  min-width: 0;
   max-width: 780px;
-  margin: 0 auto;
-  width: 100%;
 }
 
 /* ── NAV ── */

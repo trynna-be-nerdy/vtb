@@ -1,8 +1,10 @@
 import { getMeetings, getHealth } from '@/lib/data'
 import { BOARD_CONFIGS } from '@/lib/types'
 import { Navbar } from '@/components/Navbar'
+import { Sidebar } from '@/components/Sidebar'
 import { IntroSection } from '@/components/IntroSection'
 import { BoardSection } from '@/components/BoardSection'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import type { MeetingCard } from '@/lib/types'
 
 // Revalidate every 60 seconds (ISR)
@@ -33,25 +35,30 @@ export default async function HomePage() {
   return (
     <div className="site">
       <Navbar />
+      <ScrollReveal />
 
-      <div className="site-container">
-        <div className="intro-wrapper">
-          <IntroSection recentMeetings={recentMeetingsData} />
-        </div>
+      <div className="page-layout">
+        <Sidebar />
 
-        <div className="main">
-          {BOARD_CONFIGS.map((board, i) => (
-            <BoardSection
-              key={board.slug}
-              dot={board.dot}
-              title={board.title}
-              meta={board.meta}
-              meetings={boardData[i]}
-              isAdvisory={board.isAdvisory}
-              slug={board.slug}
-            />
-          ))}
-        </div>
+        <div className="site-container">
+          <div className="intro-wrapper">
+            <IntroSection recentMeetings={recentMeetingsData} />
+          </div>
+
+          <div className="main">
+            {BOARD_CONFIGS.map((board, i) => (
+              <div key={board.slug} data-reveal>
+                <BoardSection
+                  dot={board.dot}
+                  title={board.title}
+                  meta={board.meta}
+                  meetings={boardData[i]}
+                  isAdvisory={board.isAdvisory}
+                  slug={board.slug}
+                />
+              </div>
+            ))}
+          </div>
 
         {/* Official sources + newsletter */}
         <div className="content-section">
@@ -160,6 +167,7 @@ export default async function HomePage() {
           </div>
 
           <NewsletterForm />
+        </div>
         </div>
       </div>
 
