@@ -36,12 +36,14 @@ export function Navbar() {
 
   return (
     <nav ref={navRef} className="nav" id="navbar">
-      <Link href="/" className="nav-logo">
-        View the Board
-      </Link>
-      <Link href="/search" className="search-pill">
-        Search by board, topic, or keyword
-      </Link>
+      <div className="nav-inner">
+        <Link href="/" className="nav-logo">
+          View the Board
+        </Link>
+        <Link href="/search" className="search-pill">
+          Search by board, topic, or keyword
+        </Link>
+      </div>
     </nav>
   )
 }

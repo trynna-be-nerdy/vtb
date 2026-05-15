@@ -30,6 +30,7 @@ export default async function HomePage() {
     <div className="site">
       <Navbar />
 
+      <div className="site-container">
       <IntroSection recentMeetings={recentMeetings} />
 
       <div className="main">
@@ -156,6 +157,8 @@ export default async function HomePage() {
 
         <NewsletterForm />
       </div>
+
+      </div>{/* end site-container */}
 
       <div className="site-footer">
         <div className="footer-links">

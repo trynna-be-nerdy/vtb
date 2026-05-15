@@ -48,19 +48,33 @@ body {
   min-height: 100vh;
 }
 
+/* ── CENTERED CONTAINER ── */
+.site-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 /* ── NAV ── */
 .nav {
   background: var(--color-background-primary);
   border-bottom: 0.5px solid var(--color-border-tertiary);
-  padding: 0 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 0;
   height: 54px;
   position: sticky;
   top: 0;
   z-index: 100;
   transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .nav.hidden {
   transform: translateY(-100%);
