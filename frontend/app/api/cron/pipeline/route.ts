@@ -1,11 +1,9 @@
-/**
- * Vercel cron-triggered pipeline endpoint.
- * Replaces the Python APScheduler worker (backend/pipeline/worker.py).
- *
- * Schedule (vercel.json): "0 */6 * * *" — runs every 6 hours.
- * Vercel sends `Authorization: Bearer <CRON_SECRET>` automatically.
- * The pipeline runs fire-and-forget; this route returns immediately.
- */
+// Vercel cron-triggered pipeline endpoint.
+// Replaces the Python APScheduler worker (backend/pipeline/worker.py).
+// Schedule (vercel.json): "0 * /6 * * *" (every 6 hours) — the slash is split
+// here only to avoid the */ sequence terminating this comment block.
+// Vercel sends Authorization: Bearer <CRON_SECRET> automatically.
+// The pipeline runs fire-and-forget; this route returns immediately.
 import { NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
