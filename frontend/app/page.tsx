@@ -98,17 +98,13 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* About blurb with live pipeline stats */}
+          {/* About blurb + DaisyUI-style stats panel */}
           <div
             style={{
               background: 'var(--color-background-primary)',
               border: '0.5px solid var(--color-border-tertiary)',
               borderRadius: 'var(--border-radius-lg)',
               padding: '20px 24px',
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-              gap: 32,
             }}
           >
             <div
@@ -116,36 +112,39 @@ export default async function HomePage() {
                 fontSize: 13,
                 color: 'var(--color-text-secondary)',
                 lineHeight: 1.6,
-                maxWidth: 560,
+                marginBottom: health ? 16 : 0,
               }}
             >
               View the Board converts official county and LCPS meeting records into plain-English summaries, structured action logs, and decision timelines — powered by AI, linked to every official source.
             </div>
+
+            {/* DaisyUI-inspired stats row */}
             {health && (
-              <div
-                style={{
-                  flexShrink: 0,
-                  textAlign: 'right',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginBottom: 2 }}>Last updated</div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-primary)' }}>
+              <div className="vtb-stats">
+                <div className="vtb-stat">
+                  <div className="vtb-stat-title">Items This Month</div>
+                  <div className="vtb-stat-value">
+                    {(health as { items_this_month: number }).items_this_month}
+                  </div>
+                  <div className="vtb-stat-desc">Agenda items tracked</div>
+                </div>
+                <div className="vtb-stat">
+                  <div className="vtb-stat-title">Queue Depth</div>
+                  <div className="vtb-stat-value">
+                    {(health as { queue_depth: number }).queue_depth ?? 0}
+                  </div>
+                  <div className="vtb-stat-desc">Pending documents</div>
+                </div>
+                <div className="vtb-stat">
+                  <div className="vtb-stat-title">Last Pipeline Run</div>
+                  <div className="vtb-stat-value" style={{ fontSize: 14 }}>
                     {(health as { last_pipeline_run: string | null }).last_pipeline_run
                       ? new Date((health as { last_pipeline_run: string }).last_pipeline_run).toLocaleString('en-US', {
                           month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
                         })
-                      : 'Not yet run'}
+                      : '—'}
                   </div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-secondary)', marginBottom: 2 }}>Items this month</div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-primary)' }}>
-                    {(health as { items_this_month: number }).items_this_month} agenda items
-                  </div>
+                  <div className="vtb-stat-live">Live</div>
                 </div>
               </div>
             )}
