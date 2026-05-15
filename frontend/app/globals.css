@@ -46,6 +46,7 @@ body {
 .site {
   background: var(--color-background-tertiary);
   min-height: 100vh;
+  padding-top: 54px; /* offset for fixed navbar */
 }
 
 /* ── CENTERED CONTAINER ── */
@@ -61,12 +62,13 @@ body {
   border-bottom: 0.5px solid var(--color-border-tertiary);
   padding: 0;
   height: 54px;
-  position: sticky;
+  /* Fixed avoids the sticky+transform compositing flicker bug */
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  /* Only animate transform — opacity caused repaint flicker */
-  transition: transform 0.22s ease;
-  will-change: transform;
+  transition: top 0.22s ease;
 }
 .nav-inner {
   max-width: 780px;
@@ -79,7 +81,7 @@ body {
   justify-content: space-between;
 }
 .nav.hidden {
-  transform: translateY(-100%);
+  top: -54px;
 }
 .nav-logo {
   font-size: 16px;
@@ -649,14 +651,13 @@ body {
   padding: 18px 0;
 }
 .site-footer-inner {
-  max-width: 780px;
-  margin: 0 auto;
   width: 100%;
-  padding: 0 28px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
+  gap: 20px;
+  /* no flex-wrap — keep links + copyright on one line */
+  white-space: nowrap;
 }
 .footer-links {
   display: flex;
