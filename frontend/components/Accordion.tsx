@@ -10,17 +10,13 @@ export interface DecisionGroup {
   totalItems: number
 }
 
-function inferOutcomeColor(decision: string): string {
-  const lower = decision.toLowerCase()
-  if (lower.includes('denied') || lower.includes('rejected')) return 'dot-amber'
-  if (lower.includes('defer') || lower.includes('postpone') || lower.includes('tabled'))
-    return 'dot-amber'
-  if (lower.includes('approv') || lower.includes('adopt') || lower.includes('pass'))
-    return 'dot-teal'
-  return 'dot-blue'
-}
-
-export function DecisionsAccordion({ items, accentColor }: { items: DecisionGroup[]; accentColor: string }) {
+export function DecisionsAccordion({
+  items,
+  accentColor,
+}: {
+  items: DecisionGroup[]
+  accentColor: string
+}) {
   const [openIdx, setOpenIdx] = useState<number | null>(null)
 
   if (items.length === 0) return null
@@ -66,7 +62,11 @@ export function DecisionsAccordion({ items, accentColor }: { items: DecisionGrou
                 <ul className="fb-decision-list">
                   {group.decisions.map((d, j) => (
                     <li key={j} className="fb-decision-item">
-                      <span className={`fb-decision-dot ${inferOutcomeColor(d)}`} style={{ background: accentColor }} />
+                      {/* Dot uses the board's accent colour — set via inline style so it's always correct */}
+                      <span
+                        className="fb-decision-dot"
+                        style={{ background: accentColor }}
+                      />
                       <span>{d}</span>
                     </li>
                   ))}
