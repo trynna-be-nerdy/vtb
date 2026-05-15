@@ -36,13 +36,35 @@ export function Navbar() {
 
   return (
     <nav ref={navRef} className="nav" id="navbar">
+      {/* DaisyUI navbar layout inside existing .nav-inner container */}
       <div className="nav-inner">
-        <Link href="/" className="nav-logo">
-          View the Board
-        </Link>
-        <Link href="/search" className="search-pill">
-          Search by board, topic, or keyword
-        </Link>
+        <div className="navbar-start" style={{ flex: 'none' }}>
+          <Link href="/" className="nav-logo">
+            View the Board
+          </Link>
+        </div>
+
+        {/* DaisyUI btn-ghost gives subtle hover ripple and focus ring */}
+        <div className="navbar-end" style={{ flex: 'none' }}>
+          <Link
+            href="/search"
+            className="btn btn-ghost btn-sm"
+            style={{
+              borderRadius: 20,
+              fontSize: 12,
+              color: 'var(--color-text-secondary)',
+              background: 'var(--color-background-secondary)',
+              border: '0.5px solid var(--color-border-tertiary)',
+              fontWeight: 400,
+              letterSpacing: 0,
+              height: 'auto',
+              padding: '5px 14px',
+              minHeight: 'unset',
+            }}
+          >
+            Search by board, topic, or keyword
+          </Link>
+        </div>
       </div>
     </nav>
   )
