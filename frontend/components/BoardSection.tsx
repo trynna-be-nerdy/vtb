@@ -164,8 +164,7 @@ export function BoardSection({
           </div>
           <div className="section-meta">{meta}</div>
         </div>
-        {/* DaisyUI btn-ghost for the view-all link */}
-        <a href={`/boards/${slug}`} className="btn btn-ghost btn-xs" style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontWeight: 400 }}>
+        <a href={`/boards/${slug}`} className="view-all">
           View all →
         </a>
       </div>
