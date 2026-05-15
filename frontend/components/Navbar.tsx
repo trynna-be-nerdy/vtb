@@ -16,10 +16,12 @@ export function Navbar() {
       const currentY = window.scrollY
       const scrollingDown = currentY > lastY.current
 
+      // TypeScript can't narrow `nav` through the closure boundary; non-null is safe
+      // because handleScroll is only registered after the `if (!nav) return` guard above.
       if (scrollingDown && currentY > 80) {
-        nav.classList.add('hidden')
+        nav!.classList.add('hidden')
       } else if (!scrollingDown) {
-        nav.classList.remove('hidden')
+        nav!.classList.remove('hidden')
       }
 
       lastY.current = currentY
