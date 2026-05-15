@@ -662,6 +662,17 @@ body {
   color: var(--color-text-secondary);
 }
 
+/* ── DAISYUI card used alongside .resource-card: reset DaisyUI overflow:hidden so border-radius shows ── */
+.card.resource-card {
+  overflow: visible; /* DaisyUI sets overflow:hidden; our border-radius on .resource-card is enough */
+  border-radius: var(--border-radius-lg);
+  border-color: var(--color-border-tertiary);
+  background: var(--color-background-primary);
+}
+.card.resource-card:hover {
+  border-color: var(--color-border-secondary);
+}
+
 /* ── EMPTY STATE ── */
 .empty-state {
   padding: 32px 20px;
