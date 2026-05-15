@@ -7,8 +7,6 @@ export function Navbar() {
   const navRef = useRef<HTMLElement>(null)
   const lastY = useRef(0)
   const ticking = useRef(false)
-  // Track how many px the user has scrolled in the current direction
-  const directionDelta = useRef(0)
 
   useEffect(() => {
     const nav = navRef.current
@@ -16,19 +14,12 @@ export function Navbar() {
 
     function handleScroll() {
       const currentY = window.scrollY
-      const delta = currentY - lastY.current
+      const scrollingDown = currentY > lastY.current
 
-      // Accumulate movement in the current direction; reset on reversal
-      if (Math.sign(delta) !== Math.sign(directionDelta.current)) {
-        directionDelta.current = 0
-      }
-      directionDelta.current += delta
-
-      // Only hide after scrolling down 10 px past the fold; only show after scrolling up 6 px
-      if (directionDelta.current > 10 && currentY > 80) {
-        nav!.classList.add('hidden')
-      } else if (directionDelta.current < -6) {
-        nav!.classList.remove('hidden')
+      if (scrollingDown && currentY > 80) {
+        nav.classList.add('hidden')
+      } else if (!scrollingDown) {
+        nav.classList.remove('hidden')
       }
 
       lastY.current = currentY
@@ -37,8 +28,8 @@ export function Navbar() {
 
     function onScroll() {
       if (!ticking.current) {
-        requestAnimationFrame(handleScroll)
         ticking.current = true
+        requestAnimationFrame(handleScroll)
       }
     }
 
