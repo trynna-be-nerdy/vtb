@@ -25,43 +25,5 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    ports:
-      - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql+asyncpg://vtb:vtbpassword@postgres:5432/vtb
-      REDIS_URL: redis://redis:6379/0
-      OLLAMA_BASE_URL: http://host.docker.internal:11434
-      PIPELINE_API_KEY: ${PIPELINE_API_KEY:-change-me-in-production}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    # 4 workers — stateless, so this scales horizontally on a single box.
-    # Each worker gets its own DB pool (5 min / 10 max = 20–40 connections total).
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --workers 4"
-
-  pipeline:
-    build:
-      context: .
-      dockerfile: Dockerfile.pipeline
-    environment:
-      DATABASE_URL: postgresql+asyncpg://vtb:vtbpassword@postgres:5432/vtb
-      REDIS_URL: redis://redis:6379/0
-      OLLAMA_BASE_URL: http://host.docker.internal:11434
-      OLLAMA_MODEL: gemma4:26b
-      OLLAMA_TIMEOUT: "600"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
 volumes:
   postgres_data:
