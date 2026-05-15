@@ -1,0 +1,23 @@
+import type { Metadata } from 'next'
+import { Providers } from '@/lib/providers'
+import './globals.css'
+
+export const metadata: Metadata = {
+  title: 'View the Board — Loudoun County Government Decisions',
+  description:
+    'Plain-English summaries of Loudoun County government board meetings, decisions, and agenda items — updated automatically from official public records.',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
+}
