@@ -45,6 +45,7 @@ interface ActivityRow {
   date: string
   title: string
   note?: string
+  meetingId?: number
 }
 
 function buildActivityRows(meetings: MeetingCard[]): ActivityRow[] {
@@ -57,6 +58,7 @@ function buildActivityRows(meetings: MeetingCard[]): ActivityRow[] {
         board: formatBoardName(m.board_slug),
         date: formatShortDate(m.meeting_date),
         title: decision,
+        meetingId: m.id,
       })
       if (rows.length >= 9) break
     }
@@ -137,18 +139,27 @@ export function IntroSection({ recentMeetings = [] }: IntroSectionProps) {
         <div className="activity-log-label">
           Decisions &amp; changes recorded — {weekLabel}
         </div>
-        {displayRows.map((row, i) => (
-          <div key={i} className="act-row">
-            <span className={`act-pill ${OUTCOME_PILL[row.outcome] ?? 'ap-updated'}`}>
-              {row.outcome}
-            </span>
-            <span className="act-board">
-              {row.board} · {row.date}
-            </span>
-            <span className="act-title">{row.title}</span>
-            {row.note && <span className="act-vote">{row.note}</span>}
-          </div>
-        ))}
+        {displayRows.map((row, i) => {
+          const inner = (
+            <>
+              <span className={`act-pill ${OUTCOME_PILL[row.outcome] ?? 'ap-updated'}`}>
+                {row.outcome}
+              </span>
+              <span className="act-board">
+                {row.board} · {row.date}
+              </span>
+              <span className="act-title">{row.title}</span>
+              {row.note && <span className="act-vote">{row.note}</span>}
+            </>
+          )
+          return row.meetingId ? (
+            <a key={i} href={`/meetings/${row.meetingId}`} className="act-row" style={{ textDecoration: 'none' }}>
+              {inner}
+            </a>
+          ) : (
+            <div key={i} className="act-row">{inner}</div>
+          )
+        })}
       </div>
     </div>
   )
