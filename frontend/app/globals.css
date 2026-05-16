@@ -2144,6 +2144,7 @@ body {
   border: 0.5px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
   padding: 20px 24px 0;
+  margin-top: 24px;
   margin-bottom: 14px;
 }
 
