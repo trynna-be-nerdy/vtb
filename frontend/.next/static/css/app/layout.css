@@ -2256,29 +2256,14 @@ body {
 .site-footer-inner {
   width: 100%;
   padding: 0 40px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 12px;
-}
-/* Left col — link(s) flush left */
-.footer-left {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 16px;
-  justify-content: flex-start;
 }
-/* Center col — copyright pinned to middle */
 .footer-copy {
   font-size: 11px;
   color: var(--color-text-secondary);
-  white-space: nowrap;
   text-align: center;
-}
-/* Right col — empty, mirrors left for visual balance */
-.footer-right {
-  display: flex;
-  justify-content: flex-end;
 }
 .footer-link-item {
   font-size: 12px;

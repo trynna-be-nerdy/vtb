@@ -173,16 +173,9 @@ export default async function HomePage() {
 
       <div className="site-footer">
         <div className="site-footer-inner">
-          {/* Left — equal weight to right spacer */}
-          <div className="footer-left">
-            <a href="/contact" className="footer-link-item" style={{ textDecoration: 'none' }}>Contact</a>
-          </div>
-          {/* Center — copyright */}
           <div className="footer-copy">
             View the Board · Not affiliated with Loudoun County Government · AI-generated summaries from official public records
           </div>
-          {/* Right — mirrors left for balance */}
-          <div className="footer-right" />
         </div>
       </div>
     </div>
