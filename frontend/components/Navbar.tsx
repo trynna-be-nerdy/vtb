@@ -95,10 +95,6 @@ export function Navbar() {
         {/* Center: rotating 5-word tagline */}
         <RotatingTagline />
 
-        {/* Right: About */}
-        <Link href="/about" className="search-pill">
-          About
-        </Link>
       </div>
     </nav>
   )
