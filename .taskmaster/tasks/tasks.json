@@ -56,7 +56,7 @@
             ],
             "details": "Implement: (1) `rewrite_content(chunk: str) -> ContentRewriteResult` using PROMPT_1 template that instructs plain-English rewriting with required JSON structure for title, summary, decisions, action_items, key_figures. (2) `classify_content(summary: str) -> ClassificationResult` using PROMPT_2 template listing exact 12 category slugs and requiring primary_category, secondary_tags, urgency, fiscal_impact, affects_schools. (3) `generate_meeting_overview(summaries: list[str]) -> MeetingOverviewResult` using PROMPT_3 template that joins summaries with '---' separator and extracts meeting_overview, top_decisions[3], fiscal_total, next_meeting_notes. Each function passes model_class.model_json_schema() to enable structured output.",
             "status": "done",
-            "testStrategy": "Integration tests with real Ollama instance for each function. Verify ContentRewriteResult contains valid title â‰¤10 words. Verify ClassificationResult primary_category is one of 12 slugs. Verify MeetingOverviewResult top_decisions has â‰¤3 items. Test with edge cases like empty input, very long text.",
+            "testStrategy": "Integration tests with real Ollama instance for each function. Verify ContentRewriteResult contains valid title \u00c3\u00a2\u00e2\u20ac\u00b0\u00c2\u00a410 words. Verify ClassificationResult primary_category is one of 12 slugs. Verify MeetingOverviewResult top_decisions has \u00c3\u00a2\u00e2\u20ac\u00b0\u00c2\u00a43 items. Test with edge cases like empty input, very long text.",
             "parentId": "undefined"
           },
           {
@@ -256,7 +256,7 @@
               1,
               2
             ],
-            "details": "Run `alembic revision --autogenerate -m 'initial_schema'` to generate migration from existing models in `backend/db/models.py`. Review and refine the generated migration to ensure: (1) Tables created in correct order respecting foreign keys: sources â†’ seen_documents â†’ meetings â†’ agenda_items, supporting_documents â†’ pipeline_runs. (2) All indexes from model `__table_args__` are included: ix_seen_documents_url, ix_meetings_board_date, ix_meetings_date, ix_meetings_status, ix_agenda_items_meeting_id, ix_agenda_items_category, ix_agenda_items_urgency, ix_agenda_items_fiscal, ix_agenda_items_search_vector (GIN). (3) CASCADE delete on foreign keys for agenda_items and supporting_documents. (4) Default values and server_default=func.now() for timestamps.",
+            "details": "Run `alembic revision --autogenerate -m 'initial_schema'` to generate migration from existing models in `backend/db/models.py`. Review and refine the generated migration to ensure: (1) Tables created in correct order respecting foreign keys: sources \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 seen_documents \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 meetings \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 agenda_items, supporting_documents \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 pipeline_runs. (2) All indexes from model `__table_args__` are included: ix_seen_documents_url, ix_meetings_board_date, ix_meetings_date, ix_meetings_status, ix_agenda_items_meeting_id, ix_agenda_items_category, ix_agenda_items_urgency, ix_agenda_items_fiscal, ix_agenda_items_search_vector (GIN). (3) CASCADE delete on foreign keys for agenda_items and supporting_documents. (4) Default values and server_default=func.now() for timestamps.",
             "status": "pending",
             "testStrategy": "Run `alembic upgrade head` on fresh database. Verify all 6 tables exist with `\\dt`. Check indexes with `\\di`. Verify foreign key constraints with `\\d+ agenda_items`. Run `alembic downgrade base` and confirm clean rollback.",
             "parentId": "undefined"
@@ -396,7 +396,7 @@
         "title": "Create Docker Compose Configuration for Local Development",
         "description": "Set up Docker Compose to run PostgreSQL, Redis, FastAPI backend, and pipeline worker with a single command for hackathon judges.",
         "details": "1. Create `docker-compose.yml` at project root:\n   - PostgreSQL 16 service with health check, volume for data persistence\n   - Redis service with health check\n   - FastAPI backend service (depends_on: postgres, redis)\n   - Pipeline worker service (depends_on: postgres, redis)\n   - Shared network for all services\n2. Create `backend/Dockerfile`:\n   - Python 3.11 slim base image\n   - Install dependencies from requirements.txt\n   - Copy backend code\n   - Run uvicorn for API or worker.py for pipeline\n3. Create `backend/requirements.txt` with all Python dependencies:\n   - fastapi, uvicorn, sqlalchemy, alembic, pydantic\n   - httpx, beautifulsoup4, pdfplumber\n   - apscheduler, redis, asyncpg\n   - playwright (optional, for fallback scraping)\n4. Create `.env.example` with all required environment variables:\n   - DATABASE_URL, REDIS_URL, OLLAMA_URL\n   - API_KEY for pipeline trigger\n5. Create `scripts/init-db.sh`:\n   - Wait for PostgreSQL to be ready\n   - Run Alembic migrations\n   - Seed sources table with lcps.org and loudoun.gov configs\n6. Update docker-compose to run init script on first startup\n7. Document the three-command startup in README:\n   - `ollama pull gemma4:4b`\n   - `docker compose up`\n   - `cd frontend && npm run dev`",
-        "testStrategy": "Test `docker compose up` starts all services successfully. Verify services can communicate (API can reach DB/Redis). Test Alembic migrations run on fresh database. Verify pipeline worker can connect to Ollama on host. Test full flow: scrape â†’ process â†’ API returns data.",
+        "testStrategy": "Test `docker compose up` starts all services successfully. Verify services can communicate (API can reach DB/Redis). Test Alembic migrations run on fresh database. Verify pipeline worker can connect to Ollama on host. Test full flow: scrape \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 process \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 API returns data.",
         "priority": "high",
         "dependencies": [
           "5",
@@ -411,7 +411,7 @@
         "id": "12",
         "title": "Add Official Sources Section, Footer, and Newsletter Components",
         "description": "Complete the frontend with the remaining sections from ViewTheBoard_v4.html: Official Sources cards, About/Stats card, Newsletter signup, and site footer.",
-        "details": "1. Create `frontend/components/OfficialSources.tsx`:\n   - Section divider with 'Official sources' label\n   - 3-column resources-grid\n   - Resource cards: Loudoun County portal, LCPS BoardDocs, 'How to speak' guide\n   - Each card: eyebrow, title, description, CTA link\n2. Create `frontend/components/AboutStats.tsx`:\n   - Full-width card with app description on left\n   - Stats on right: 'Last updated' timestamp, 'Items this month' count\n   - Fetch stats from `/api/health` endpoint\n3. Create `frontend/components/Newsletter.tsx`:\n   - Section divider: 'Stay informed'\n   - Title: 'Get a weekly digest in your inbox'\n   - Subtitle about Sunday delivery\n   - Email input + Subscribe button (UI only for MVP, no backend)\n4. Create `frontend/components/Footer.tsx`:\n   - Left: About, Data sources, AI transparency, Contact links\n   - Right: Disclaimer text about Gemma 4 and not affiliated with county\n5. Update `frontend/app/page.tsx` to include all sections in order:\n   - Navbar â†’ Intro â†’ 4 Board Sections â†’ Official Sources â†’ About/Stats â†’ Newsletter â†’ Footer\n6. Ensure all styling matches ViewTheBoard_v4.html exactly:\n   - Content divider lines, label positioning\n   - Card borders, padding, typography",
+        "details": "1. Create `frontend/components/OfficialSources.tsx`:\n   - Section divider with 'Official sources' label\n   - 3-column resources-grid\n   - Resource cards: Loudoun County portal, LCPS BoardDocs, 'How to speak' guide\n   - Each card: eyebrow, title, description, CTA link\n2. Create `frontend/components/AboutStats.tsx`:\n   - Full-width card with app description on left\n   - Stats on right: 'Last updated' timestamp, 'Items this month' count\n   - Fetch stats from `/api/health` endpoint\n3. Create `frontend/components/Newsletter.tsx`:\n   - Section divider: 'Stay informed'\n   - Title: 'Get a weekly digest in your inbox'\n   - Subtitle about Sunday delivery\n   - Email input + Subscribe button (UI only for MVP, no backend)\n4. Create `frontend/components/Footer.tsx`:\n   - Left: About, Data sources, AI transparency, Contact links\n   - Right: Disclaimer text about Gemma 4 and not affiliated with county\n5. Update `frontend/app/page.tsx` to include all sections in order:\n   - Navbar \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 Intro \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 4 Board Sections \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 Official Sources \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 About/Stats \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 Newsletter \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 Footer\n6. Ensure all styling matches ViewTheBoard_v4.html exactly:\n   - Content divider lines, label positioning\n   - Card borders, padding, typography",
         "testStrategy": "Visual comparison to ViewTheBoard_v4.html for all new sections. Test external links open correctly. Verify stats display real data from health endpoint. Test newsletter form validation (email format). Responsive layout tests at 375px width.",
         "priority": "medium",
         "dependencies": [
@@ -475,10 +475,75 @@
           "8",
           "12"
         ],
-        "details": "Pages to create:\n1. frontend/app/boards/[slug]/page.tsx — Board listing with paginated meeting cards, board hero header\n2. frontend/app/meetings/[id]/page.tsx — Meeting detail with agenda items accordion, decisions list, fiscal highlights\n3. frontend/app/categories/[slug]/page.tsx — Category feed with filtered agenda item cards\n4. frontend/app/search/page.tsx — Search results page with query input, ranked results\n5. frontend/app/about/page.tsx — About page explaining the project\n6. frontend/app/data-sources/page.tsx — Data sources documentation page\n7. frontend/app/ai-transparency/page.tsx — AI transparency page explaining Gemma 4 prompts\n8. frontend/app/contact/page.tsx — Contact page\n\nAnimations (CSS-only, no libraries):\n- Extend ScrollReveal component: fade-up on scroll for all new page sections (data-reveal attribute)\n- Skeleton loaders: pulsing gray blocks shown during server component suspense boundaries\n- Card hover: translateY(-2px) + box-shadow lift (already partially done, extend consistently)\n- Page entry: @keyframes fadeIn on .site-container (opacity 0->1, translateY 8px->0, 0.3s ease)\n- Stagger: nth-child delay on grid items (.card:nth-child(n) { animation-delay: calc(n * 0.05s) })\n\nRed/Green accent system — add to globals.css:\n- --color-accent-red: #c0392b (urgent/significant urgency badge background)\n- --color-accent-green: #27ae60 (fiscal-positive, approved decisions badge)\n- .badge-urgent { background: var(--color-accent-red); color: white; }\n- .badge-notable { background: #e67e22; color: white; }\n- .badge-routine { background: var(--color-background-secondary); color: var(--color-text-secondary); }\n- .badge-fiscal { background: var(--color-accent-green); color: white; }\n- Apply badges on: AgendaItemCard (urgency), MeetingCard (fiscal_items > 0), BoardSection footer stats\n- Vote results containing Approved/Passed highlighted in green, Failed/Denied in red\n\nAll pages must:\n- Use Navbar, Sidebar (hidden on mobile), Footer components\n- Include ScrollReveal wrapper\n- Be responsive at 375px (single column, no sidebar)\n- Fetch data via lib/data.ts functions (no fetch() calls inline)\n- Use ISR revalidate = 60",
+        "details": "Pages to create:\n1. frontend/app/boards/[slug]/page.tsx \u00e2\u20ac\u201d Board listing with paginated meeting cards, board hero header\n2. frontend/app/meetings/[id]/page.tsx \u00e2\u20ac\u201d Meeting detail with agenda items accordion, decisions list, fiscal highlights\n3. frontend/app/categories/[slug]/page.tsx \u00e2\u20ac\u201d Category feed with filtered agenda item cards\n4. frontend/app/search/page.tsx \u00e2\u20ac\u201d Search results page with query input, ranked results\n5. frontend/app/about/page.tsx \u00e2\u20ac\u201d About page explaining the project\n6. frontend/app/data-sources/page.tsx \u00e2\u20ac\u201d Data sources documentation page\n7. frontend/app/ai-transparency/page.tsx \u00e2\u20ac\u201d AI transparency page explaining Gemma 4 prompts\n8. frontend/app/contact/page.tsx \u00e2\u20ac\u201d Contact page\n\nAnimations (CSS-only, no libraries):\n- Extend ScrollReveal component: fade-up on scroll for all new page sections (data-reveal attribute)\n- Skeleton loaders: pulsing gray blocks shown during server component suspense boundaries\n- Card hover: translateY(-2px) + box-shadow lift (already partially done, extend consistently)\n- Page entry: @keyframes fadeIn on .site-container (opacity 0->1, translateY 8px->0, 0.3s ease)\n- Stagger: nth-child delay on grid items (.card:nth-child(n) { animation-delay: calc(n * 0.05s) })\n\nRed/Green accent system \u00e2\u20ac\u201d add to globals.css:\n- --color-accent-red: #c0392b (urgent/significant urgency badge background)\n- --color-accent-green: #27ae60 (fiscal-positive, approved decisions badge)\n- .badge-urgent { background: var(--color-accent-red); color: white; }\n- .badge-notable { background: #e67e22; color: white; }\n- .badge-routine { background: var(--color-background-secondary); color: var(--color-text-secondary); }\n- .badge-fiscal { background: var(--color-accent-green); color: white; }\n- Apply badges on: AgendaItemCard (urgency), MeetingCard (fiscal_items > 0), BoardSection footer stats\n- Vote results containing Approved/Passed highlighted in green, Failed/Denied in red\n\nAll pages must:\n- Use Navbar, Sidebar (hidden on mobile), Footer components\n- Include ScrollReveal wrapper\n- Be responsive at 375px (single column, no sidebar)\n- Fetch data via lib/data.ts functions (no fetch() calls inline)\n- Use ISR revalidate = 60",
         "testStrategy": "Visual review of each page at 375px and 1200px. Verify all animations trigger correctly. Check red/green badges appear on urgency and fiscal fields. Test keyboard navigation and accessibility of new interactive elements.",
         "subtasks": [],
         "updatedAt": "2026-05-16T20:08:16.607Z"
+      },
+      {
+        "id": "17",
+        "title": "Build Official Calendar Page",
+        "description": "Create /calendar page showing all upcoming and past meetings in a monthly calendar view, filterable by board, with color-coded board badges and links to meeting detail pages.",
+        "details": "1. Add getMeetingsByMonth(year, month, board?) to frontend/lib/data.ts\n2. Create app/calendar/page.tsx as a server component\n3. Add CalendarGrid client component with month navigation\n4. Color-code each board: BOS=red, Planning=amber, LCPS=green, Advisory=gray\n5. Each day cell shows meeting badges linking to /meetings/[id]\n6. Mobile: collapse to list view\n7. Board filter tabs at top (All, BOS, Planning, LCPS, Advisory)\n8. Mark today date visually\n9. Style using existing CSS variables",
+        "testStrategy": "Verify calendar renders correct days. Test month navigation. Verify meetings on correct dates. Test board filter. Check mobile layout.",
+        "priority": "high",
+        "status": "pending",
+        "dependencies": [
+          "8"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "18",
+        "title": "Fix Sidebar Navigation - Add All 12 Categories",
+        "description": "Sidebar currently shows only 6 of 12 categories. Add missing 6 with proper labels.",
+        "details": "1. Open frontend/components/Sidebar.tsx\n2. Add missing categories: school-construction, equity-inclusion, technology, community-parks, personnel, general\n3. Match CATEGORY_LABELS map in lib/data.ts\n4. Match existing link styling\n5. Consider a show-more toggle if list is too long",
+        "testStrategy": "Verify all 12 categories link to /categories/[slug]. Check active state. Test on mobile.",
+        "priority": "medium",
+        "status": "pending",
+        "dependencies": [
+          "8"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "19",
+        "title": "Make Gemma 4 Ollama Pipeline Operational End-to-End",
+        "description": "Verify the TypeScript pipeline correctly calls Ollama with gemma4:4b, processes a real PDF, writes to PostgreSQL, and publishes to Redis. Fix any issues found.",
+        "details": "1. Check frontend/lib/llm.ts - verify Ollama API call format\n2. Verify OLLAMA_BASE_URL env var is set and Ollama is reachable\n3. Run test pipeline via POST /api/pipeline/trigger\n4. Fix common issues: model name mismatch, JSON schema format, PDF extractor errors, scraper 0-doc returns\n5. If all docs already seen, delete from seen_documents to force reprocessing\n6. Verify data appears in /meetings, /categories, /search\n7. Check Redis pub/sub fires (LiveUpdateToast appears)",
+        "testStrategy": "Trigger pipeline and verify: 1+ meeting in DB, agenda_items inserted, categories populated, health shows updated last_run.",
+        "priority": "high",
+        "status": "pending",
+        "dependencies": [
+          "16"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "20",
+        "title": "Populate Live Data and Verify All Pages Display Real Content",
+        "description": "After pipeline is working, ensure every page shows real scraped and AI-processed data. Fix any display issues.",
+        "details": "1. Run full pipeline and verify DB has real meetings + agenda_items\n2. Check each page: home, /boards/[slug], /categories/[slug], /meetings/[id], /search, /calendar\n3. Fix data shape mismatches between DB schema and TypeScript types\n4. Verify pagination works with real data\n5. Check health page shows correct stats\n6. Fix any null field crashes or missing fallbacks",
+        "testStrategy": "Manual verification of all page routes with real data. Check browser console for errors. No 500 errors in server logs.",
+        "priority": "high",
+        "status": "pending",
+        "dependencies": [
+          "19"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "21",
+        "title": "Wire Up All Frontend Routes and Fix Navigation Gaps",
+        "description": "Audit every link in Navbar, Sidebar, Footer, and page components. Ensure all links resolve. Test full navigation flow end-to-end.",
+        "details": "1. Sidebar: Today, Calendar, Search, 4 boards, 12 categories, 2 external sources\n2. Footer: About, Data Sources, AI Transparency, Contact\n3. Home: board sections -> /boards/[slug], meeting cards -> /meetings/[id]\n4. Board pages: meeting cards -> /meetings/[id], pagination\n5. Category pages: source PDF links, pagination\n6. Meeting detail: back link, accordion expand\n7. Search: results link to correct pages\n8. Test 404 for missing IDs and invalid slugs\n9. Verify sidebar active states by route\n10. External links open in new tab",
+        "testStrategy": "Click every nav link. No 404s in network tab. Test invalid routes. Test 404 page.",
+        "priority": "medium",
+        "status": "pending",
+        "dependencies": [
+          "17"
+        ],
+        "subtasks": []
       }
     ],
     "metadata": {
