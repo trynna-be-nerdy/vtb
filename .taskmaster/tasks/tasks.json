@@ -501,11 +501,12 @@
         "details": "1. Open frontend/components/Sidebar.tsx\n2. Add missing categories: school-construction, equity-inclusion, technology, community-parks, personnel, general\n3. Match CATEGORY_LABELS map in lib/data.ts\n4. Match existing link styling\n5. Consider a show-more toggle if list is too long",
         "testStrategy": "Verify all 12 categories link to /categories/[slug]. Check active state. Test on mobile.",
         "priority": "medium",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [
           "8"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2026-05-16T21:08:35.458Z"
       },
       {
         "id": "19",
@@ -549,7 +550,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-16T21:08:21.296Z",
+      "lastModified": "2026-05-16T21:08:35.461Z",
       "taskCount": 21,
       "completedCount": 16,
       "tags": [
