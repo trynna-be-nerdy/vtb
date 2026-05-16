@@ -1603,21 +1603,19 @@ body {
 .sidebar {
   width: 210px;
   flex-shrink: 0;
-  position: sticky;
-  top: calc(54px + 14px);          /* navbar + top margin */
-  height: calc(100vh - 54px - 28px); /* account for top+bottom margin */
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* Static — stays at top, scrolls away with page */
+  position: static;
+  /* Shrink-wraps to content height */
+  height: auto;
+  overflow: visible;
   /* Card look — matches main .section style */
   background: var(--color-background-primary);
   border: 0.5px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
   margin: 14px 0 14px 0;
-  padding: 10px 0 24px;
-  scrollbar-width: none;
+  padding: 10px 0 14px;
 }
-.sidebar::-webkit-scrollbar { display: none; }
 
 .sidebar-section {
   padding-bottom: 4px;
