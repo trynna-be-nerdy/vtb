@@ -195,7 +195,7 @@ export function BoardSection({
             : 'No meetings found · Source: county meeting portal'}
         </div>
         <a href={`/boards/${slug}`} className="footer-link">
-          All {title} meetings →
+          All meetings →
         </a>
       </div>
     </div>
