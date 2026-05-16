@@ -189,7 +189,7 @@ export async function getMeetingsByMonth(year: number, month: number, board?: st
         WHERE meeting_date >= ${firstDay} AND meeting_date <= ${lastDay}
         ORDER BY meeting_date ASC`
 
-  const payload = { meetings: serializeRows(rows as Record<string, unknown>[]) as MeetingCalendarItem[] }
+  const payload = { meetings: serializeRows(rows as Record<string, unknown>[]) as unknown as MeetingCalendarItem[] }
   await cacheSet(cacheKey, payload, CACHE_TTL)
   return payload
 }
