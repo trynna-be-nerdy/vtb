@@ -82,14 +82,6 @@ export function Sidebar() {
         ))}
       </div>
 
-      <div className="sidebar-divider" />
-
-      {/* Footer links */}
-      <div className="sidebar-section sidebar-footer-links">
-        <Link href="/about"           className="sidebar-item sidebar-item-sm">About</Link>
-        <Link href="/data-sources"    className="sidebar-item sidebar-item-sm">Data sources</Link>
-        <Link href="/ai-transparency" className="sidebar-item sidebar-item-sm">AI transparency</Link>
-      </div>
     </aside>
   )
 }

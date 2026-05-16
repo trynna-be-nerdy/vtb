@@ -174,9 +174,6 @@ export default async function HomePage() {
       <div className="site-footer">
         <div className="site-footer-inner">
           <div className="footer-links">
-            <a href="/about" className="footer-link-item" style={{ textDecoration: 'none' }}>About</a>
-            <a href="/data-sources" className="footer-link-item" style={{ textDecoration: 'none' }}>Data sources</a>
-            <a href="/ai-transparency" className="footer-link-item" style={{ textDecoration: 'none' }}>AI transparency</a>
             <a href="/contact" className="footer-link-item" style={{ textDecoration: 'none' }}>Contact</a>
           </div>
           <div className="footer-divider" />
