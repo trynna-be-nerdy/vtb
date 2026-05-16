@@ -81,17 +81,19 @@ export function Sidebar() {
       {/* ── Sources ── */}
       <div className="sidebar-section">
         <div className="sidebar-section-label">Sources</div>
-        {SOURCES.map(src => (
-          <a
-            key={src.href}
-            href={src.href}
-            className={`sidebar-item sidebar-item-sm ${!src.external && pathname === src.href ? 'sidebar-item-active' : ''}`}
-            {...(src.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          >
-            {src.label}
-            {src.external && <span className="sidebar-external-icon">↗</span>}
-          </a>
-        ))}
+        <div className="sidebar-source-card">
+          {SOURCES.map(src => (
+            <a
+              key={src.href}
+              href={src.href}
+              className={`sidebar-source-item ${!src.external && pathname === src.href ? 'sidebar-source-item-active' : ''}`}
+              {...(src.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              {src.label}
+              {src.external && <span className="sidebar-external-icon">↗</span>}
+            </a>
+          ))}
+        </div>
       </div>
     </aside>
   )
