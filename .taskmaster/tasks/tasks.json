@@ -487,12 +487,12 @@
         "details": "1. Add getMeetingsByMonth(year, month, board?) to frontend/lib/data.ts\n2. Create app/calendar/page.tsx as a server component\n3. Add CalendarGrid client component with month navigation\n4. Color-code each board: BOS=red, Planning=amber, LCPS=green, Advisory=gray\n5. Each day cell shows meeting badges linking to /meetings/[id]\n6. Mobile: collapse to list view\n7. Board filter tabs at top (All, BOS, Planning, LCPS, Advisory)\n8. Mark today date visually\n9. Style using existing CSS variables",
         "testStrategy": "Verify calendar renders correct days. Test month navigation. Verify meetings on correct dates. Test board filter. Check mobile layout.",
         "priority": "high",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [
           "8"
         ],
         "subtasks": [],
-        "updatedAt": "2026-05-16T21:08:21.294Z"
+        "updatedAt": "2026-05-16T21:14:49.867Z"
       },
       {
         "id": "18",
@@ -501,12 +501,12 @@
         "details": "1. Open frontend/components/Sidebar.tsx\n2. Add missing categories: school-construction, equity-inclusion, technology, community-parks, personnel, general\n3. Match CATEGORY_LABELS map in lib/data.ts\n4. Match existing link styling\n5. Consider a show-more toggle if list is too long",
         "testStrategy": "Verify all 12 categories link to /categories/[slug]. Check active state. Test on mobile.",
         "priority": "medium",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [
           "8"
         ],
         "subtasks": [],
-        "updatedAt": "2026-05-16T21:08:35.458Z"
+        "updatedAt": "2026-05-16T21:15:00.255Z"
       },
       {
         "id": "19",
@@ -550,9 +550,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-16T21:08:35.461Z",
+      "lastModified": "2026-05-16T21:15:00.256Z",
       "taskCount": 21,
-      "completedCount": 16,
+      "completedCount": 18,
       "tags": [
         "master"
       ]
