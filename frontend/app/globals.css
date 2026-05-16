@@ -98,6 +98,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative; /* anchor for .nav-tagline absolute centering */
 }
 .nav-logo {
   font-size: 16px;
@@ -126,6 +127,20 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
+/* Rotating tagline — dead center between logo and search pill */
+.nav-tagline {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
 .search-pill {
   font-size: 12px;
   color: var(--color-text-secondary);
@@ -135,12 +150,16 @@ body {
   padding: 6px 14px;
   cursor: pointer;
   text-decoration: none;
-  transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
 }
 .search-pill:hover {
   border-color: var(--color-border-secondary);
   color: var(--color-text-primary);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+  transform: translateY(-1px);
+}
+.search-pill:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* ── SIDEBAR ── */
@@ -266,6 +285,7 @@ body {
   font-size: 12px;
   font-weight: 500;
   color: var(--color-text-primary);
+  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
   background: var(--color-background-secondary);
   border: 0.5px solid var(--color-border-secondary);
   border-radius: var(--border-radius-md);
@@ -277,6 +297,12 @@ body {
 }
 .cal-btn:hover {
   background: var(--color-background-tertiary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.cal-btn:active {
+  transform: scale(0.96);
+  box-shadow: none;
 }
 
 /* ── ACTIVITY LOG ── */
@@ -394,10 +420,14 @@ body {
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
+  transition: color 0.18s, transform 0.18s;
+  display: inline-block;
 }
 .view-all:hover {
   color: var(--color-text-primary);
+  transform: translateX(2px);
 }
+.view-all:active { transform: translateX(0) scale(0.96); }
 
 /* ── STICKY NOTE WALL ── */
 .wall {
@@ -554,10 +584,14 @@ body {
   color: var(--color-text-primary);
   cursor: pointer;
   text-decoration: none;
+  transition: color 0.18s, transform 0.18s;
+  display: inline-block;
 }
 .footer-link:hover {
   color: var(--color-text-info);
+  transform: translateX(2px);
 }
+.footer-link:active { transform: translateX(0); }
 
 /* ── ADVISORY / COMM GRID (now uses .wall too) ── */
 .comm-grid {
@@ -780,10 +814,14 @@ body {
   font-size: 12px;
   color: var(--color-text-secondary);
   cursor: pointer;
+  transition: color 0.18s, transform 0.18s;
+  display: inline-block;
 }
 .footer-link-item:hover {
   color: var(--color-text-primary);
+  transform: translateY(-1px);
 }
+.footer-link-item:active { transform: scale(0.95); }
 /* Thin divider between nav links and copyright */
 .footer-divider {
   width: 1px;
@@ -1198,9 +1236,14 @@ body {
   font-size: 12px;
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color 0.15s;
+  display: inline-block;
+  transition: color 0.18s, transform 0.18s;
 }
-.back-link:hover { color: var(--color-text-primary); }
+.back-link:hover {
+  color: var(--color-text-primary);
+  transform: translateX(-2px);
+}
+.back-link:active { transform: translateX(0) scale(0.96); }
 
 .meeting-detail-header {
   padding: 14px 28px 20px;
@@ -1466,10 +1509,14 @@ body {
   background: var(--color-background-primary);
   text-decoration: none;
   border-bottom: 0.5px solid var(--color-border-tertiary);
-  transition: background 0.15s;
+  transition: background 0.18s, transform 0.18s;
 }
 .doc-item:last-child { border-bottom: none; }
-.doc-item:hover { background: var(--color-background-secondary); }
+.doc-item:hover {
+  background: var(--color-background-secondary);
+  transform: translateX(3px);
+}
+.doc-item:active { transform: translateX(0) scale(0.98); }
 .doc-icon { font-size: 14px; flex-shrink: 0; }
 .doc-title {
   flex: 1;
