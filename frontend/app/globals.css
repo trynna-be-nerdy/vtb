@@ -1253,7 +1253,8 @@ body {
    MEETING DETAIL PAGE
    ───────────────────────────────────────────────────── */
 .meeting-detail-back {
-  padding: 16px 28px 0;
+  padding: 0 28px 0;
+  margin-top: 24px;
 }
 .back-link {
   font-size: 12px;
@@ -1557,7 +1558,8 @@ body {
    SEARCH PAGE
    ───────────────────────────────────────────────────── */
 .search-page-header {
-  padding: 24px 28px 12px;
+  padding: 0 28px 12px;
+  margin-top: 24px;
 }
 .search-page-title {
   font-family: var(--font-serif);
@@ -1900,7 +1902,8 @@ body {
 
 /* ── BOARDS PAGE ─────────────────────────────────────────────────────────── */
 .board-hero {
-  padding: 28px 28px 0;
+  padding: 0 28px 0;
+  margin-top: 24px;
 }
 .board-hero-inner {
   background: var(--color-background-primary);
@@ -2026,7 +2029,7 @@ body {
 .pagination-info { font-size: 11px; color: var(--color-text-secondary); }
 
 /* ── CATEGORY PAGE ───────────────────────────────────────────────────────── */
-.category-hero { padding: 28px 28px 0; }
+.category-hero { padding: 0 28px 0; margin-top: 24px; }
 .category-hero-inner {
   background: var(--color-background-primary);
   border: 0.5px solid var(--color-border-tertiary);
@@ -2070,7 +2073,7 @@ body {
 .agenda-item-meeting a:hover { text-decoration: underline; }
 
 /* ── INFO PAGES (about, data-sources, ai-transparency, contact) ──────────── */
-.info-page { padding: 28px 28px 48px; }
+.info-page { padding: 24px 28px 48px; margin-top: 0; }
 .info-section {
   background: var(--color-background-primary);
   border: 0.5px solid var(--color-border-tertiary);

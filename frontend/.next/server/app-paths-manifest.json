@@ -1,7 +1,7 @@
 {
-  "/search/page": "app/search/page.js",
   "/page": "app/page.js",
+  "/categories/[slug]/page": "app/categories/[slug]/page.js",
   "/calendar/page": "app/calendar/page.js",
-  "/api/updates/route": "app/api/updates/route.js",
-  "/categories/[slug]/page": "app/categories/[slug]/page.js"
+  "/search/page": "app/search/page.js",
+  "/api/updates/route": "app/api/updates/route.js"
 }
