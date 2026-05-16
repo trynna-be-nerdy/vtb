@@ -1485,19 +1485,24 @@ body {
 /* ── PAGE LAYOUT (sidebar + main) ── */
 .page-layout {
   display: flex;
-  max-width: 1080px;
+  max-width: 1200px;   /* widened to fit sidebar + content + phantom mirror */
   margin: 0 auto;
   align-items: flex-start;
   min-height: calc(100vh - 54px);
-  gap: 14px;          /* breathing room between sidebar card and content */
-  padding: 0 0 0 14px; /* left edge padding so sidebar card doesn't touch viewport */
+  gap: 14px;
+  padding: 0 14px;     /* equal left/right edge padding */
+}
+/* Phantom right column — same width as sidebar, keeps content dead-center */
+.page-layout::after {
+  content: '';
+  width: 210px;
+  flex-shrink: 0;
 }
 
 /* ── CENTERED CONTAINER ── */
 .site-container {
   flex: 1;
   min-width: 0;
-  max-width: 780px;
 }
 
 /* ── NAV ── */
@@ -1525,7 +1530,7 @@ body {
   top: -54px;
 }
 .nav-inner {
-  max-width: 1080px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   height: 100%;
