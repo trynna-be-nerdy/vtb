@@ -154,11 +154,13 @@ export default async function CalendarPage({
                     <div className="calendar-meetings">
                       {dayMeetings.slice(0, 3).map(m => {
                         const cfg = BOARD_COLORS[m.board_slug]
+                        const isReady = m.processing_status === 'completed'
+                        const BadgeEl = isReady ? Link : 'div'
                         return (
-                          <Link
+                          <BadgeEl
                             key={m.id}
-                            href={m.processing_status === 'completed' ? `/meetings/${m.id}` : '#'}
-                            className="calendar-meeting-badge"
+                            {...(isReady ? { href: `/meetings/${m.id}` } : {})}
+                            className={`calendar-meeting-badge${isReady ? '' : ' calendar-meeting-badge-pending'}`}
                             style={{ borderLeftColor: cfg?.color ?? '#71717a' }}
                             title={m.title}
                           >
@@ -166,10 +168,10 @@ export default async function CalendarPage({
                               {cfg?.abbr ?? m.board_slug}
                             </span>
                             <span className="calendar-badge-title">{m.title}</span>
-                            {m.processing_status !== 'completed' && (
+                            {!isReady && (
                               <span className="calendar-badge-pending">pending</span>
                             )}
-                          </Link>
+                          </BadgeEl>
                         )
                       })}
                       {dayMeetings.length > 3 && (

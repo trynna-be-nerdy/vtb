@@ -36,14 +36,20 @@ export function OfficialSources() {
           </div>
           <div className="resource-cta">lcps.org/boarddocs →</div>
         </a>
-        <div className="card card-bordered resource-card">
+        <a
+          href="https://www.loudoun.gov/4464/Public-Comment"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="card card-bordered resource-card"
+          style={{ textDecoration: 'none' }}
+        >
           <div className="resource-eyebrow">Resident guide</div>
           <div className="resource-title">How to speak at a board meeting</div>
           <div className="resource-desc">
             Step-by-step guide to signing up for public comment at any Loudoun County board — supervisors, school board, planning commission, or advisory body.
           </div>
-          <div className="resource-cta">View guide →</div>
-        </div>
+          <div className="resource-cta">loudoun.gov →</div>
+        </a>
       </div>
     </div>
   )

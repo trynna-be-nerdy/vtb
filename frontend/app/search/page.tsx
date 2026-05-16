@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
+import { Footer } from '@/components/Footer'
 import { SearchInput } from '@/components/SearchInput'
 import type { SearchResponse, SearchResult } from '@/lib/types'
 
@@ -216,6 +217,8 @@ export default function SearchPage() {
           <div style={{ height: 48 }} />
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }
