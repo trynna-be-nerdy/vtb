@@ -1074,6 +1074,60 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────
+   GLOBAL BUTTON ANIMATION LAYER
+   Targets DaisyUI .btn and .btn-neutral (Subscribe, etc.)
+   ───────────────────────────────────────────────────── */
+.btn {
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.18s ease,
+              background 0.15s ease !important;
+}
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.95) !important;
+  box-shadow: none !important;
+}
+
+/* Sidebar items */
+.sidebar-item {
+  transition: color 0.15s, background 0.15s, transform 0.18s;
+}
+.sidebar-item:not(.sidebar-item-active):hover {
+  transform: translateX(2px);
+}
+
+/* Search-page suggestion pills */
+.search-suggestion {
+  transition: background 0.15s, border-color 0.15s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.search-suggestion:hover {
+  transform: translateY(-1px) scale(1.03);
+}
+.search-suggestion:active {
+  transform: scale(0.96);
+}
+
+/* Page-info widget links */
+.page-info-link {
+  transition: background 0.14s, color 0.14s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.page-info-link:hover {
+  transform: translateX(2px);
+}
+
+/* Agenda PDF link */
+.agenda-pdf-link {
+  transition: color 0.15s, transform 0.18s;
+  display: inline-block;
+}
+.agenda-pdf-link:hover {
+  transform: translateX(2px);
+}
+
+/* ─────────────────────────────────────────────────────
    DARK MODE — DaisyUI badge + btn colours adapt via
    CSS var overrides (DaisyUI theme stays "vtb" light;
    we patch just the HSL channel vars it reads from)
