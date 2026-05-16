@@ -3163,6 +3163,11 @@ body {
   display: flex;
   gap: 10px;
   align-items: flex-start;
+  transition: border-color 0.15s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.top-decision-card:hover {
+  border-color: var(--color-border-secondary);
+  transform: translateY(-1px);
 }
 .top-decision-num {
   font-size: 11px;
