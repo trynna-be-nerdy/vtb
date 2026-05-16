@@ -1,12 +1,9 @@
-import { getMeetingsByMonth, getHealth, type MeetingCalendarItem } from '@/lib/data'
+import { getMeetingsByMonth, type MeetingCalendarItem } from '@/lib/data'
 import { BOARD_CONFIGS } from '@/lib/types'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
 import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
-import { OfficialSources } from '@/components/OfficialSources'
-import { AboutStats } from '@/components/AboutStats'
-import { Newsletter } from '@/components/Newsletter'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -69,10 +66,7 @@ export default async function CalendarPage({
 
   const activeBoard = BOARD_CONFIGS.find(b => b.slug === searchParams.board)?.slug ?? null
 
-  const [data, health] = await Promise.all([
-    getMeetingsByMonth(year, month, activeBoard).catch(() => ({ meetings: [] as MeetingCalendarItem[] })),
-    getHealth().catch(() => null),
-  ])
+  const data = await getMeetingsByMonth(year, month, activeBoard).catch(() => ({ meetings: [] as MeetingCalendarItem[] }))
 
   const meetings = data.meetings
   const byDate = groupByDate(meetings)
@@ -208,20 +202,6 @@ export default async function CalendarPage({
                 {cfg.label}
               </span>
             ))}
-          </div>
-
-          {/* ── Bottom section — matches home page layout ── */}
-          <div className="content-section">
-            <OfficialSources />
-            <AboutStats health={health as { items_this_month?: number; last_pipeline_run?: string | null } | null} />
-
-            <div className="content-divider">
-              <div className="content-divider-line" />
-              <div className="content-divider-label">Stay informed</div>
-              <div className="content-divider-line" />
-            </div>
-
-            <Newsletter />
           </div>
 
         </div>
