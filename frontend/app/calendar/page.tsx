@@ -155,23 +155,25 @@ export default async function CalendarPage({
                       {dayMeetings.slice(0, 3).map(m => {
                         const cfg = BOARD_COLORS[m.board_slug]
                         const isReady = m.processing_status === 'completed'
-                        const BadgeEl = isReady ? Link : 'div'
-                        return (
-                          <BadgeEl
-                            key={m.id}
-                            {...(isReady ? { href: `/meetings/${m.id}` } : {})}
-                            className={`calendar-meeting-badge${isReady ? '' : ' calendar-meeting-badge-pending'}`}
-                            style={{ borderLeftColor: cfg?.color ?? '#71717a' }}
-                            title={m.title}
-                          >
+                        const badgeClass = `calendar-meeting-badge${isReady ? '' : ' calendar-meeting-badge-pending'}`
+                        const badgeStyle = { borderLeftColor: cfg?.color ?? '#71717a' }
+                        const inner = (
+                          <>
                             <span className="calendar-badge-abbr" style={{ color: cfg?.color ?? '#71717a' }}>
                               {cfg?.abbr ?? m.board_slug}
                             </span>
                             <span className="calendar-badge-title">{m.title}</span>
-                            {!isReady && (
-                              <span className="calendar-badge-pending">pending</span>
-                            )}
-                          </BadgeEl>
+                            {!isReady && <span className="calendar-badge-pending">pending</span>}
+                          </>
+                        )
+                        return isReady ? (
+                          <Link key={m.id} href={`/meetings/${m.id}`} className={badgeClass} style={badgeStyle} title={m.title}>
+                            {inner}
+                          </Link>
+                        ) : (
+                          <div key={m.id} className={badgeClass} style={badgeStyle} title={m.title}>
+                            {inner}
+                          </div>
                         )
                       })}
                       {dayMeetings.length > 3 && (
