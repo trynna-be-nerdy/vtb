@@ -1531,11 +1531,11 @@ body {
   margin: 0 auto;
   width: 100%;
   height: 100%;
-  padding: 0 28px;
-  display: flex;
+  padding: 0 14px;
+  display: grid;
+  grid-template-columns: 210px 1fr 210px;
+  gap: 14px;
   align-items: center;
-  justify-content: space-between;
-  position: relative; /* anchor for .nav-tagline absolute centering */
 }
 .nav-logo {
   font-size: 16px;
@@ -1564,13 +1564,10 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
-/* Rotating tagline — centred with the main content column.
-   Grid is symmetric (210px sidebar = 210px empty right col + equal page padding)
-   so 50% of nav-inner = exact midpoint of the content body. */
+/* Rotating tagline — sits in grid column 2 (the content column),
+   which is the exact same column as the main page content below. */
 .nav-tagline {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  text-align: center;
   font-size: 11px;
   font-weight: 500;
   color: var(--color-text-secondary);
