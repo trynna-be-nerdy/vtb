@@ -1,4 +1,7 @@
 services:
+
+  # ── Infrastructure ────────────────────────────────────────────────────────
+
   postgres:
     image: postgres:16-alpine
     environment:
@@ -14,6 +17,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - vtb
 
   redis:
     image: redis:7-alpine
@@ -24,6 +29,81 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - vtb
+
+  # ── One-time DB setup (runs migrations + seed, then exits) ────────────────
+
+  db_init:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: ["bash", "scripts/init-db.sh"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://vtb:vtbpassword@postgres:5432/vtb
+      # psycopg sync URL for alembic
+      ALEMBIC_DATABASE_URL: postgresql+psycopg://vtb:vtbpassword@postgres:5432/vtb
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ./alembic:/app/alembic:ro
+      - ./alembic.ini:/app/alembic.ini:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - vtb
+    restart: "no"
+
+  # ── Application services ──────────────────────────────────────────────────
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://vtb:vtbpassword@postgres:5432/vtb
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      db_init:
+        condition: service_completed_successfully
+    networks:
+      - vtb
+    restart: unless-stopped
+
+  pipeline_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://vtb:vtbpassword@postgres:5432/vtb
+      REDIS_URL: redis://redis:6379/0
+      # Ollama runs on the host machine — host.docker.internal resolves to host IP
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://host.docker.internal:11434}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      db_init:
+        condition: service_completed_successfully
+    networks:
+      - vtb
+    restart: unless-stopped
+
+networks:
+  vtb:
+    driver: bridge
 
 volumes:
   postgres_data:
