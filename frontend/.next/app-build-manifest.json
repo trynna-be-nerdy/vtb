@@ -16,10 +16,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/calendar/page.js"
     ],
-    "/_not-found/page": [
+    "/boards/[slug]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/boards/[slug]/page.js"
+    ],
+    "/search/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/search/page.js"
     ]
   }
 }

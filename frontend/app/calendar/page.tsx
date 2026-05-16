@@ -196,6 +196,7 @@ export default async function CalendarPage({
 
           {/* ── Board legend ── */}
           <div className="calendar-legend" data-reveal>
+            <span className="calendar-legend-key">Key</span>
             {Object.entries(BOARD_COLORS).map(([slug, cfg]) => (
               <span key={slug} className="calendar-legend-item">
                 <span className="calendar-legend-dot" style={{ background: cfg.color }} />
