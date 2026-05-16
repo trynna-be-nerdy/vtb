@@ -173,9 +173,13 @@ export function BoardSection({
       <div className={isAdvisory ? 'comm-grid' : 'wall'}>
         {meetings.slice(0, cardCount).map(m =>
           isAdvisory ? (
-            <AdvisorySticky key={m.id} meeting={m} chipClass={chipClass} />
+            <a key={m.id} href={`/meetings/${m.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+              <AdvisorySticky meeting={m} chipClass={chipClass} />
+            </a>
           ) : (
-            <StickyNote key={m.id} meeting={m} colorClass={colorClass} chipClass={chipClass} />
+            <a key={m.id} href={`/meetings/${m.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+              <StickyNote meeting={m} colorClass={colorClass} chipClass={chipClass} />
+            </a>
           )
         )}
         {meetings.length < cardCount && !isAdvisory &&
