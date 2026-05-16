@@ -1567,12 +1567,11 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
-/* Rotating tagline — centered over the main content column.
-   The sidebar is 210px, so shift right by sidebar/2 (105px)
-   to align with the visual midpoint of the board content. */
+/* Rotating tagline — layout is now symmetric (sidebar left = phantom right)
+   so the content midpoint equals the nav midpoint: plain 50% works. */
 .nav-tagline {
   position: absolute;
-  left: calc(50% + 105px);
+  left: 50%;
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 500;
@@ -1682,10 +1681,10 @@ body {
 }
 
 
-/* Hide sidebar + reset tagline offset on narrow screens */
+/* Hide sidebar on narrow screens */
 @media (max-width: 860px) {
   .sidebar { display: none; }
-  .nav-tagline { left: 50%; } /* no sidebar offset on mobile */
+  .page-layout::after { display: none; } /* drop phantom too so content fills width */
 }
 
 /* ── INTRO ── */
