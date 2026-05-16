@@ -102,7 +102,7 @@ export async function discoverLcpsDocuments(): Promise<DocumentInfo[]> {
         pdf_url,
         title,
         meeting_date,
-        board_type: 'lcps',
+        board_type: 'lcps-school-board',
       })
     } catch {
       // skip

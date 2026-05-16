@@ -3,7 +3,7 @@
  */
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
-const MODEL_NAME = process.env.OLLAMA_MODEL ?? 'gemma4:26b'
+const MODEL_NAME = process.env.OLLAMA_MODEL ?? 'gemma4:4b'
 const MAX_RETRIES = 2
 
 const RETRY_SUFFIX =

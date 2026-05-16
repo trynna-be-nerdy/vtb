@@ -5,7 +5,7 @@ export interface DocumentInfo {
   pdf_url: string
   title: string
   meeting_date: string // YYYY-MM-DD
-  board_type: string   // supervisors | planning | lcps | advisory
+  board_type: string   // board-of-supervisors | planning-commission | lcps-school-board | advisory-boards
   sha256?: string
 }
 

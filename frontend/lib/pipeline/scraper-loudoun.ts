@@ -10,9 +10,9 @@ const API_BASE = 'https://webapi.legistar.com/v1/loudouncounty'
 const RECENT_EVENTS = 50
 
 const BOARD_TYPE_MAP: Array<[string, string]> = [
-  ['supervisor', 'supervisors'],
-  ['planning', 'planning'],
-  ['advisory', 'advisory'],
+  ['supervisor', 'board-of-supervisors'],
+  ['planning',   'planning-commission'],
+  ['advisory',   'advisory-boards'],
 ]
 
 function mapBoardType(bodyName: string): string {
@@ -20,7 +20,7 @@ function mapBoardType(bodyName: string): string {
   for (const [fragment, slug] of BOARD_TYPE_MAP) {
     if (lower.includes(fragment)) return slug
   }
-  return 'advisory'
+  return 'advisory-boards'
 }
 
 function parseLegistarDate(raw: string): string | null {
