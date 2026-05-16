@@ -19,39 +19,35 @@ const CATEGORIES = [
   { slug: 'policy-governance', label: 'Policy & Governance' },
 ]
 
+const SOURCES = [
+  { label: 'Loudoun County Portal', href: 'https://loudoun.gov/meetings',   external: true },
+  { label: 'LCPS BoardDocs',        href: 'https://lcps.org/boarddocs',     external: true },
+  { label: 'About',                 href: '/about',                         external: false },
+  { label: 'Data sources',          href: '/data-sources',                  external: false },
+  { label: 'AI transparency',       href: '/ai-transparency',               external: false },
+]
+
 export function Sidebar() {
   const pathname = usePathname()
 
   return (
     <aside className="sidebar">
-      {/* Home */}
+      {/* ── Nav ── */}
       <div className="sidebar-section">
-        <Link
-          href="/"
-          className={`sidebar-item ${pathname === '/' ? 'sidebar-item-active' : ''}`}
-        >
-          <span className="sidebar-home-icon">◈</span>
-          Today
+        <Link href="/"        className={`sidebar-item ${pathname === '/'        ? 'sidebar-item-active' : ''}`}>
+          <span className="sidebar-home-icon">◈</span>Today
         </Link>
-        <Link
-          href="/calendar"
-          className={`sidebar-item ${pathname === '/calendar' ? 'sidebar-item-active' : ''}`}
-        >
-          <span className="sidebar-home-icon">⊡</span>
-          Calendar
+        <Link href="/calendar" className={`sidebar-item ${pathname === '/calendar' ? 'sidebar-item-active' : ''}`}>
+          <span className="sidebar-home-icon">⊡</span>Calendar
         </Link>
-        <Link
-          href="/search"
-          className={`sidebar-item ${pathname === '/search' ? 'sidebar-item-active' : ''}`}
-        >
-          <span className="sidebar-home-icon">⊙</span>
-          Search
+        <Link href="/search"  className={`sidebar-item ${pathname === '/search'  ? 'sidebar-item-active' : ''}`}>
+          <span className="sidebar-home-icon">⊙</span>Search
         </Link>
       </div>
 
       <div className="sidebar-divider" />
 
-      {/* Boards */}
+      {/* ── Boards ── */}
       <div className="sidebar-section">
         <div className="sidebar-section-label">Boards</div>
         {BOARDS.map(board => (
@@ -68,7 +64,7 @@ export function Sidebar() {
 
       <div className="sidebar-divider" />
 
-      {/* Categories */}
+      {/* ── Categories ── */}
       <div className="sidebar-section">
         <div className="sidebar-section-label">Categories</div>
         {CATEGORIES.map(cat => (
@@ -82,6 +78,23 @@ export function Sidebar() {
         ))}
       </div>
 
+      <div className="sidebar-divider" />
+
+      {/* ── Sources ── */}
+      <div className="sidebar-section">
+        <div className="sidebar-section-label">Sources</div>
+        {SOURCES.map(src => (
+          <a
+            key={src.href}
+            href={src.href}
+            className={`sidebar-item sidebar-item-sm ${!src.external && pathname === src.href ? 'sidebar-item-active' : ''}`}
+            {...(src.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            {src.label}
+            {src.external && <span className="sidebar-external-icon">↗</span>}
+          </a>
+        ))}
+      </div>
     </aside>
   )
 }

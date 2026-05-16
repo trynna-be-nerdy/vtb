@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Providers } from '@/lib/providers'
-import { PageInfoWidget } from '@/components/PageInfoWidget'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -17,10 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="vtb">
       <body>
-        <Providers>
-          {children}
-          <PageInfoWidget />
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

@@ -1560,10 +1560,12 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
-/* Rotating tagline — dead center between logo and search pill */
+/* Rotating tagline — centered over the main content column.
+   The sidebar is 210px, so shift right by sidebar/2 (105px)
+   to align with the visual midpoint of the board content. */
 .nav-tagline {
   position: absolute;
-  left: 50%;
+  left: calc(50% + 105px);
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 500;
