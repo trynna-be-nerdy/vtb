@@ -4,5 +4,15 @@
       "path": "/api/cron/pipeline",
       "schedule": "0 */6 * * *"
     }
+  ],
+  "headers": [
+    {
+      "source": "/api/updates",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-transform" },
+        { "key": "X-Accel-Buffering", "value": "no" },
+        { "key": "Connection", "value": "keep-alive" }
+      ]
+    }
   ]
 }
