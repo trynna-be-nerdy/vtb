@@ -36,6 +36,7 @@ async def run_scrape_cycle() -> None:
         from backend.pipeline.scrapers.lcps_scraper import LCPSScraper
         from backend.pipeline import process_pdf
         from backend.pubsub import publish_new_item
+        from backend.cache.invalidator import invalidate_all_lists, invalidate_search
         from backend.db.database import AsyncSessionLocal
         from backend.db import models
 
