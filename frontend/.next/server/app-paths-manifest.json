@@ -1,5 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/api/updates/route": "app/api/updates/route.js",
   "/calendar/page": "app/calendar/page.js"
 }
