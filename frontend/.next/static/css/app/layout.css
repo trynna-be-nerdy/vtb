@@ -969,11 +969,6 @@ html {
 .swap input:indeterminate ~ .swap-indeterminate {
   opacity: 1;
 }
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-}
 .table {
   position: relative;
   width: 100%;

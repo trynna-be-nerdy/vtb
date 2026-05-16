@@ -1,20 +1,23 @@
-import { getMeetingsByMonth, type MeetingCalendarItem } from '@/lib/data'
+import { getMeetingsByMonth, getHealth, type MeetingCalendarItem } from '@/lib/data'
 import { BOARD_CONFIGS } from '@/lib/types'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
 import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { OfficialSources } from '@/components/OfficialSources'
+import { AboutStats } from '@/components/AboutStats'
+import { Newsletter } from '@/components/Newsletter'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Meeting Calendar — View the Board',
   description: 'Browse all Loudoun County government meetings by date. Filter by board.',
 }
 
-// Board display config for calendar
 const BOARD_COLORS: Record<string, { color: string; abbr: string; label: string }> = {
   'board-of-supervisors': { color: '#0d9488', abbr: 'BOS',      label: 'Board of Supervisors' },
   'planning-commission':  { color: '#d97706', abbr: 'Planning',  label: 'Planning Commission' },
@@ -29,17 +32,16 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
-function prevMonth(year: number, month: number): { y: number; m: number } {
+function prevMonth(year: number, month: number) {
   return month === 1 ? { y: year - 1, m: 12 } : { y: year, m: month - 1 }
 }
-function nextMonth(year: number, month: number): { y: number; m: number } {
+function nextMonth(year: number, month: number) {
   return month === 12 ? { y: year + 1, m: 1 } : { y: year, m: month + 1 }
 }
 function monthParam(y: number, m: number) {
   return `${y}-${String(m).padStart(2, '0')}`
 }
 
-// Group meetings by day-of-month string key "YYYY-MM-DD"
 function groupByDate(meetings: MeetingCalendarItem[]): Map<string, MeetingCalendarItem[]> {
   const map = new Map<string, MeetingCalendarItem[]>()
   for (const m of meetings) {
@@ -58,62 +60,58 @@ export default async function CalendarPage({
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
 
-  // Parse ?month=YYYY-MM or default to current month
   let year = now.getFullYear()
-  let month = now.getMonth() + 1 // 1-based
+  let month = now.getMonth() + 1
   if (searchParams.month && /^\d{4}-\d{2}$/.test(searchParams.month)) {
     const [y, m] = searchParams.month.split('-').map(Number)
-    if (y >= 2020 && y <= 2030 && m >= 1 && m <= 12) {
-      year = y
-      month = m
-    }
+    if (y >= 2020 && y <= 2030 && m >= 1 && m <= 12) { year = y; month = m }
   }
 
   const activeBoard = BOARD_CONFIGS.find(b => b.slug === searchParams.board)?.slug ?? null
 
-  const data = await getMeetingsByMonth(year, month, activeBoard).catch(() => ({ meetings: [] }))
+  const [data, health] = await Promise.all([
+    getMeetingsByMonth(year, month, activeBoard).catch(() => ({ meetings: [] as MeetingCalendarItem[] })),
+    getHealth().catch(() => null),
+  ])
+
   const meetings = data.meetings
   const byDate = groupByDate(meetings)
 
-  // Calendar grid math
   const firstDayOfMonth = new Date(year, month - 1, 1)
   const daysInMonth = new Date(year, month, 0).getDate()
-  const startDow = firstDayOfMonth.getDay() // 0=Sun
+  const startDow = firstDayOfMonth.getDay()
 
-  // Build cell array: null = padding, number = day
   const cells: (number | null)[] = [
     ...Array(startDow).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ]
-  // Pad to full weeks
   while (cells.length % 7 !== 0) cells.push(null)
 
   const prev = prevMonth(year, month)
   const next = nextMonth(year, month)
-  const prevHref = `/calendar?month=${monthParam(prev.y, prev.m)}${activeBoard ? `&board=${activeBoard}` : ''}`
-  const nextHref = `/calendar?month=${monthParam(next.y, next.m)}${activeBoard ? `&board=${activeBoard}` : ''}`
-
+  const boardSuffix = activeBoard ? `&board=${activeBoard}` : ''
+  const prevHref = `/calendar?month=${monthParam(prev.y, prev.m)}${boardSuffix}`
+  const nextHref = `/calendar?month=${monthParam(next.y, next.m)}${boardSuffix}`
   const pad = (n: number) => String(n).padStart(2, '0')
 
   return (
     <div className="site">
       <Navbar />
       <ScrollReveal />
+
       <div className="page-layout">
         <Sidebar />
-        <main className="main-content">
 
-          {/* ── Header ── */}
-          <div className="calendar-page-header">
+        <div className="site-container">
+
+          {/* ── Calendar header ── */}
+          <div className="calendar-page-header" data-reveal>
             <div className="calendar-title-row">
               <Link href={prevHref} className="calendar-nav-btn" aria-label="Previous month">←</Link>
-              <h1 className="calendar-month-title">
-                {MONTH_NAMES[month - 1]} {year}
-              </h1>
+              <h1 className="calendar-month-title">{MONTH_NAMES[month - 1]} {year}</h1>
               <Link href={nextHref} className="calendar-nav-btn" aria-label="Next month">→</Link>
             </div>
 
-            {/* ── Board filter tabs ── */}
             <div className="calendar-filter-tabs">
               <Link
                 href={`/calendar?month=${monthParam(year, month)}`}
@@ -137,15 +135,13 @@ export default async function CalendarPage({
             </div>
           </div>
 
-          {/* ── Grid ── */}
-          <div className="calendar-grid-wrapper">
-            {/* Day headers */}
+          {/* ── Calendar grid ── */}
+          <div className="calendar-grid-wrapper" data-reveal>
             <div className="calendar-grid">
               {DAY_NAMES.map(d => (
                 <div key={d} className="calendar-day-header">{d}</div>
               ))}
 
-              {/* Day cells */}
               {cells.map((day, i) => {
                 if (day === null) {
                   return <div key={`pad-${i}`} className="calendar-cell calendar-cell-empty" />
@@ -158,7 +154,7 @@ export default async function CalendarPage({
                 return (
                   <div
                     key={dateKey}
-                    className={`calendar-cell ${isToday ? 'calendar-cell-today' : ''} ${isPast && !isToday ? 'calendar-cell-past' : ''}`}
+                    className={`calendar-cell${isToday ? ' calendar-cell-today' : ''}${isPast && !isToday ? ' calendar-cell-past' : ''}`}
                   >
                     <span className="calendar-day-num">{day}</span>
                     <div className="calendar-meetings">
@@ -194,7 +190,7 @@ export default async function CalendarPage({
 
           {/* ── Empty state ── */}
           {meetings.length === 0 && (
-            <div className="calendar-empty">
+            <div className="calendar-empty" data-reveal>
               <p className="calendar-empty-title">No meetings found for {MONTH_NAMES[month - 1]} {year}</p>
               <p className="calendar-empty-sub">
                 The pipeline runs every 6 hours to discover new documents from Loudoun County and LCPS.
@@ -204,8 +200,8 @@ export default async function CalendarPage({
             </div>
           )}
 
-          {/* ── Legend ── */}
-          <div className="calendar-legend">
+          {/* ── Board legend ── */}
+          <div className="calendar-legend" data-reveal>
             {Object.entries(BOARD_COLORS).map(([slug, cfg]) => (
               <span key={slug} className="calendar-legend-item">
                 <span className="calendar-legend-dot" style={{ background: cfg.color }} />
@@ -214,10 +210,24 @@ export default async function CalendarPage({
             ))}
           </div>
 
-          <Footer />
-        </main>
-        <div />
+          {/* ── Bottom section — matches home page layout ── */}
+          <div className="content-section">
+            <OfficialSources />
+            <AboutStats health={health as { items_this_month?: number; last_pipeline_run?: string | null } | null} />
+
+            <div className="content-divider">
+              <div className="content-divider-line" />
+              <div className="content-divider-label">Stay informed</div>
+              <div className="content-divider-line" />
+            </div>
+
+            <Newsletter />
+          </div>
+
+        </div>
       </div>
+
+      <Footer />
     </div>
   )
 }
