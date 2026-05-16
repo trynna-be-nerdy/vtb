@@ -466,7 +466,7 @@
         "id": "16",
         "title": "Build Full Frontend Pages with Red/Green Animations",
         "description": "Build out every page of the frontend with smooth animations and a red/green accent color system matching the existing globals.css design.",
-        "status": "in-progress",
+        "status": "done",
         "priority": "high",
         "dependencies": [
           "8",
@@ -475,14 +475,14 @@
         "details": "Pages to create:\n1. frontend/app/boards/[slug]/page.tsx — Board listing with paginated meeting cards, board hero header\n2. frontend/app/meetings/[id]/page.tsx — Meeting detail with agenda items accordion, decisions list, fiscal highlights\n3. frontend/app/categories/[slug]/page.tsx — Category feed with filtered agenda item cards\n4. frontend/app/search/page.tsx — Search results page with query input, ranked results\n5. frontend/app/about/page.tsx — About page explaining the project\n6. frontend/app/data-sources/page.tsx — Data sources documentation page\n7. frontend/app/ai-transparency/page.tsx — AI transparency page explaining Gemma 4 prompts\n8. frontend/app/contact/page.tsx — Contact page\n\nAnimations (CSS-only, no libraries):\n- Extend ScrollReveal component: fade-up on scroll for all new page sections (data-reveal attribute)\n- Skeleton loaders: pulsing gray blocks shown during server component suspense boundaries\n- Card hover: translateY(-2px) + box-shadow lift (already partially done, extend consistently)\n- Page entry: @keyframes fadeIn on .site-container (opacity 0->1, translateY 8px->0, 0.3s ease)\n- Stagger: nth-child delay on grid items (.card:nth-child(n) { animation-delay: calc(n * 0.05s) })\n\nRed/Green accent system — add to globals.css:\n- --color-accent-red: #c0392b (urgent/significant urgency badge background)\n- --color-accent-green: #27ae60 (fiscal-positive, approved decisions badge)\n- .badge-urgent { background: var(--color-accent-red); color: white; }\n- .badge-notable { background: #e67e22; color: white; }\n- .badge-routine { background: var(--color-background-secondary); color: var(--color-text-secondary); }\n- .badge-fiscal { background: var(--color-accent-green); color: white; }\n- Apply badges on: AgendaItemCard (urgency), MeetingCard (fiscal_items > 0), BoardSection footer stats\n- Vote results containing Approved/Passed highlighted in green, Failed/Denied in red\n\nAll pages must:\n- Use Navbar, Sidebar (hidden on mobile), Footer components\n- Include ScrollReveal wrapper\n- Be responsive at 375px (single column, no sidebar)\n- Fetch data via lib/data.ts functions (no fetch() calls inline)\n- Use ISR revalidate = 60",
         "testStrategy": "Visual review of each page at 375px and 1200px. Verify all animations trigger correctly. Check red/green badges appear on urgency and fiscal fields. Test keyboard navigation and accessibility of new interactive elements.",
         "subtasks": [],
-        "updatedAt": "2026-05-16T20:03:06.367Z"
+        "updatedAt": "2026-05-16T20:08:16.607Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-16T20:03:06.368Z",
+      "lastModified": "2026-05-16T20:08:16.609Z",
       "taskCount": 16,
-      "completedCount": 12,
+      "completedCount": 13,
       "tags": [
         "master"
       ]
