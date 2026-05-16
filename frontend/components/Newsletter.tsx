@@ -1,5 +1,3 @@
-'use client'
-
 export function Newsletter() {
   return (
     <div className="newsletter">

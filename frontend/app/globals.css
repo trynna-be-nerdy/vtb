@@ -826,7 +826,13 @@ body {
   width: 100%;
   padding: 0 40px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
   align-items: center;
 }
 .footer-copy {
