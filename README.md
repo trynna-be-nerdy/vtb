@@ -201,6 +201,50 @@ All prompts use Ollama's structured JSON output mode (`"format": <json-schema>`)
 
 ---
 
+## Production Deployment
+
+### Frontend → Vercel
+
+1. Push to GitHub, then connect the repo in the [Vercel dashboard](https://vercel.com/new).
+2. Set **Root Directory** to `frontend/`.
+3. Add environment variables in the Vercel dashboard:
+   - `DATABASE_URL` — Neon or another external PostgreSQL URL
+   - `REDIS_URL` — Upstash Redis URL (`rediss://...`)
+   - `CRON_SECRET` — random secret for the `/api/cron/pipeline` endpoint
+4. Vercel auto-deploys on every push to `main`.
+
+### Backend → Render
+
+The `render.yaml` blueprint in the repo defines two services:
+- **vtb-api**: FastAPI web service (health check at `/api/health`)
+- **vtb-pipeline-worker**: background worker running APScheduler
+
+Deploy via [Render Blueprint](https://render.com/docs/blueprint-spec):
+1. Connect your GitHub repo in the Render dashboard.
+2. Render will read `render.yaml` and create both services automatically.
+3. Set environment variables in the Render dashboard for each service:
+   - `DATABASE_URL`, `REDIS_URL`, `OLLAMA_BASE_URL`, `PIPELINE_API_KEY`
+
+### Shared infrastructure
+
+- **PostgreSQL**: [Neon](https://neon.tech) free tier — one connection string works from both Vercel and Render.
+- **Redis**: [Upstash](https://upstash.com) free tier — use the `rediss://` TLS URL for external access.
+
+### Connecting Render to local Ollama (ngrok)
+
+The pipeline worker on Render needs to reach the Ollama server running on your local machine:
+
+```bash
+# Install ngrok: https://ngrok.com/download
+ngrok http 11434 --host-header=localhost:11434
+```
+
+Copy the `https://xxxx.ngrok-free.app` URL and set it as `OLLAMA_BASE_URL` in the Render dashboard for the `vtb-pipeline-worker` service.
+
+> **Alternative:** Run the pipeline worker locally (it writes to the shared DB/Redis) and only deploy the FastAPI API to Render for serving the read-only API routes.
+
+---
+
 ## Quality Metrics
 
 | Metric | How measured |
