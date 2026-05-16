@@ -1564,11 +1564,12 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
-/* Rotating tagline — shift left slightly to compensate for the search pill
-   being wider than the logo, which pulls the visual centre leftward. */
+/* Rotating tagline — centred with the main content column.
+   Grid is symmetric (210px sidebar = 210px empty right col + equal page padding)
+   so 50% of nav-inner = exact midpoint of the content body. */
 .nav-tagline {
   position: absolute;
-  left: calc(50% - 24px);
+  left: 50%;
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 500;
@@ -1589,6 +1590,8 @@ body {
   cursor: pointer;
   text-decoration: none;
   transition: border-color 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+  /* Align with right edge of main content column (mirror the empty right grid col) */
+  margin-right: calc(210px + 14px - 28px);
 }
 .search-pill:hover {
   border-color: var(--color-border-secondary);
@@ -2257,7 +2260,13 @@ body {
   width: 100%;
   padding: 0 40px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
   align-items: center;
 }
 .footer-copy {
