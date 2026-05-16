@@ -529,11 +529,12 @@
         "details": "1. Run full pipeline and verify DB has real meetings + agenda_items\n2. Check each page: home, /boards/[slug], /categories/[slug], /meetings/[id], /search, /calendar\n3. Fix data shape mismatches between DB schema and TypeScript types\n4. Verify pagination works with real data\n5. Check health page shows correct stats\n6. Fix any null field crashes or missing fallbacks",
         "testStrategy": "Manual verification of all page routes with real data. Check browser console for errors. No 500 errors in server logs.",
         "priority": "high",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [
           "19"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2026-05-16T21:18:32.216Z"
       },
       {
         "id": "21",
@@ -552,7 +553,7 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-16T21:15:20.855Z",
+      "lastModified": "2026-05-16T21:18:32.217Z",
       "taskCount": 21,
       "completedCount": 20,
       "tags": [
