@@ -66,6 +66,10 @@ async def run_scrape_cycle() -> None:
                 except Exception:
                     logger.exception("Failed to process document %s", doc.url)
 
+        # Bust all list/feed/search caches after full scrape cycle
+        await invalidate_all_lists()
+        await invalidate_search()
+
     except Exception:
         logger.exception("Scrape cycle failed")
     finally:
