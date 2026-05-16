@@ -94,7 +94,7 @@ export default async function MeetingDetailPage({
 
           {/* ── Meeting overview ── */}
           {meeting.meeting_overview && (
-            <div className="meeting-section">
+            <div className="meeting-section" data-reveal>
               <div className="meeting-section-label">Meeting Overview</div>
               <p className="meeting-overview-text">{meeting.meeting_overview}</p>
             </div>
@@ -102,9 +102,9 @@ export default async function MeetingDetailPage({
 
           {/* ── Top decisions ── */}
           {meeting.top_decisions && meeting.top_decisions.length > 0 && (
-            <div className="meeting-section">
+            <div className="meeting-section" data-reveal>
               <div className="meeting-section-label">Top Decisions</div>
-              <div className="top-decisions-grid">
+              <div className="top-decisions-grid stagger-children">
                 {meeting.top_decisions.slice(0, 3).map((d, i) => (
                   <div key={i} className="top-decision-card">
                     <div className="top-decision-num">{i + 1}</div>
@@ -116,7 +116,7 @@ export default async function MeetingDetailPage({
           )}
 
           {/* ── Agenda items accordion ── */}
-          <div className="meeting-section">
+          <div className="meeting-section" data-reveal>
             <div className="meeting-section-label">
               Agenda Items
               {meeting.agenda_items.length > 0 && (
@@ -128,9 +128,9 @@ export default async function MeetingDetailPage({
 
           {/* ── Supporting documents ── */}
           {meeting.supporting_documents.length > 0 && (
-            <div className="meeting-section">
+            <div className="meeting-section" data-reveal>
               <div className="meeting-section-label">Supporting Documents</div>
-              <div className="docs-list">
+              <div className="docs-list stagger-children">
                 {meeting.supporting_documents.map(doc => (
                   <a
                     key={doc.id}
@@ -153,7 +153,7 @@ export default async function MeetingDetailPage({
 
           {/* ── Next meeting notes ── */}
           {meeting.next_meeting_notes && (
-            <div className="meeting-section">
+            <div className="meeting-section" data-reveal>
               <div className="meeting-section-label">Next Meeting</div>
               <p className="meeting-overview-text">{meeting.next_meeting_notes}</p>
             </div>
