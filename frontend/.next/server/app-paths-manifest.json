@@ -1,7 +1,8 @@
 {
-  "/api/updates/route": "app/api/updates/route.js",
-  "/calendar/page": "app/calendar/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
+  "/calendar/page": "app/calendar/page.js",
   "/categories/[slug]/page": "app/categories/[slug]/page.js",
-  "/search/page": "app/search/page.js"
+  "/search/page": "app/search/page.js",
+  "/api/updates/route": "app/api/updates/route.js"
 }
