@@ -542,18 +542,19 @@
         "details": "1. Sidebar: Today, Calendar, Search, 4 boards, 12 categories, 2 external sources\n2. Footer: About, Data Sources, AI Transparency, Contact\n3. Home: board sections -> /boards/[slug], meeting cards -> /meetings/[id]\n4. Board pages: meeting cards -> /meetings/[id], pagination\n5. Category pages: source PDF links, pagination\n6. Meeting detail: back link, accordion expand\n7. Search: results link to correct pages\n8. Test 404 for missing IDs and invalid slugs\n9. Verify sidebar active states by route\n10. External links open in new tab",
         "testStrategy": "Click every nav link. No 404s in network tab. Test invalid routes. Test 404 page.",
         "priority": "medium",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           "17"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2026-05-16T21:15:20.854Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-16T21:15:10.552Z",
+      "lastModified": "2026-05-16T21:15:20.855Z",
       "taskCount": 21,
-      "completedCount": 19,
+      "completedCount": 20,
       "tags": [
         "master"
       ]
