@@ -45,14 +45,14 @@ export default async function MeetingDetailPage({
 
         <div className="site-container">
           {/* ── Back link ── */}
-          <div className="meeting-detail-back">
+          <div className="meeting-detail-back" data-reveal>
             <a href={`/boards/${meeting.board_slug}`} className="back-link">
               ← {BOARD_LABELS[meeting.board_slug] ?? 'Board'}
             </a>
           </div>
 
           {/* ── Meeting header ── */}
-          <div className="meeting-detail-header">
+          <div className="meeting-detail-header" data-reveal>
             <div className="meeting-detail-meta">
               <span className="meeting-detail-board">
                 {BOARD_LABELS[meeting.board_slug] ?? meeting.board_slug}

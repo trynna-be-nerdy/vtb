@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
 import { Footer } from '@/components/Footer'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import { SearchInput } from '@/components/SearchInput'
 import type { SearchResponse, SearchResult } from '@/lib/types'
 
@@ -143,6 +144,7 @@ export default function SearchPage() {
   return (
     <div className="site">
       <Navbar />
+      <ScrollReveal />
 
       <div className="page-layout">
         <Sidebar />
@@ -207,7 +209,7 @@ export default function SearchPage() {
 
           {/* Results list */}
           {hasResults && (
-            <div className="search-results-list">
+            <div className="search-results-list stagger-children">
               {results.map(r => (
                 <ResultCard key={r.id} result={r} query={debouncedQuery} />
               ))}

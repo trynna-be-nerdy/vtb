@@ -16,4 +16,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/calendar/page.js"
     ],
-    
+    "/boards/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/boards/[slug]/page.js"
+    ],
+    "/search/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/search/page.js"
+    ],
+    "/categories/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/categories/[slug]/page.js"
+    ]
+  }
+}
