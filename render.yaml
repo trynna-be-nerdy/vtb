@@ -1,0 +1,49 @@
+services:
+  # ── FastAPI REST API ─────────────────────────────────────────────────────────
+  - type: web
+    name: vtb-api
+    runtime: python
+    rootDir: .
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.api.main:app --host 0.0.0.0 --port $PORT --workers 2
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: OLLAMA_BASE_URL
+        sync: false
+      - key: OLLAMA_MODEL
+        value: gemma4:4b
+      - key: PIPELINE_API_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.0
+
+  # ── Background pipeline worker ───────────────────────────────────────────────
+  - type: worker
+    name: vtb-pipeline-worker
+    runtime: python
+    rootDir: .
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m backend.pipeline.worker
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      # Set to ngrok URL when Ollama runs locally: https://xxxx.ngrok-free.app
+      - key: OLLAMA_BASE_URL
+        sync: false
+      - key: OLLAMA_MODEL
+        value: gemma4:4b
+      - key: PIPELINE_API_KEY
+        fromService:
+          name: vtb-api
+          type: web
+          envVarKey: PIPELINE_API_KEY
+      - key: PYTHON_VERSION
+        value: 3.12.0
