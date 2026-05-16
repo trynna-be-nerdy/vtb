@@ -515,11 +515,12 @@
         "details": "1. Check frontend/lib/llm.ts - verify Ollama API call format\n2. Verify OLLAMA_BASE_URL env var is set and Ollama is reachable\n3. Run test pipeline via POST /api/pipeline/trigger\n4. Fix common issues: model name mismatch, JSON schema format, PDF extractor errors, scraper 0-doc returns\n5. If all docs already seen, delete from seen_documents to force reprocessing\n6. Verify data appears in /meetings, /categories, /search\n7. Check Redis pub/sub fires (LiveUpdateToast appears)",
         "testStrategy": "Trigger pipeline and verify: 1+ meeting in DB, agenda_items inserted, categories populated, health shows updated last_run.",
         "priority": "high",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           "16"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2026-05-16T21:15:10.551Z"
       },
       {
         "id": "20",
@@ -550,9 +551,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2026-05-16T21:15:00.256Z",
+      "lastModified": "2026-05-16T21:15:10.552Z",
       "taskCount": 21,
-      "completedCount": 18,
+      "completedCount": 19,
       "tags": [
         "master"
       ]
