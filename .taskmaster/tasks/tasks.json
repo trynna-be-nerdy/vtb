@@ -526,7 +526,7 @@
         "id": "20",
         "title": "Populate Live Data and Verify All Pages Display Real Content",
         "description": "After pipeline is working, ensure every page shows real scraped and AI-processed data. Fix any display issues.",
-        "details": "1. Run full pipeline and verify DB has real meetings + agenda_items\n2. Check each page: home, /boards/[slug], /categories/[slug], /meetings/[id], /search, /calendar\n3. Fix data shape mismatches between DB schema and TypeScript types\n4. Verify pagination works with real data\n5. Check health page shows correct stats\n6. Fix any null field crashes or missing fallbacks",
+        "details": "1. Run full pipeline and verify DB has real meetings + agenda_items\n2. Check each page: home, /boards/[slug], /categories/[slug], /meetings/[id], /search, /calendar\n3. Fix data shape mismatches between DB schema and TypeScript types\n4. Verify pagination works with real data\n5. Check health page shows correct stats\n6. Fix any null field crashes or missing fallbacks\n\n=== SESSION 2026-05-16 IMPLEMENTATION NOTES ===\n\nTASK 16 & 21 - Frontend polish and route wiring (DONE):\n- Dead links fixed: OfficialSources How-to-speak card -> loudoun.gov/4464/Public-Comment\n- Calendar pending badges: non-clickable div (cursor:default, opacity:0.62) instead of href=#\n- Search page: added Footer, ScrollReveal, data-reveal, stagger-children on results\n- All page first-sections: margin-top:24px (board-hero, category-hero, meeting-detail-back, search-page-header, info-page)\n- Stagger extended to 12+ children, spring easing cubic-bezier(0.22,1,0.36,1)\n- Hover animations: calendar cells, nav buttons, filter tabs, resource cards, back-link, search chips, result cards, pagination, top-decision cards, info-sections, accordion items\n- Sidebar page-enter animation; scroll-reveal springier cubic-bezier\n- Meeting detail: data-reveal on back-link, header, overview, top-decisions, agenda, docs, next-meeting; stagger-children on top-decisions grid and docs list\n\nTASK 17 - Calendar page (DONE):\n- Cell height: 100px -> 72px desktop, 60px -> 48px mobile\n- margin-top:24px on calendar-page-header (matches home page content start)\n- Bottom section (OfficialSources/AboutStats/Newsletter) removed\n- Board legend: Key label added (bold uppercase)\n- Filter tabs: smooth color transitions\n- Nav buttons: spring-scale on hover/active\n- TypeScript: tsc --noEmit passes cleanly\n\nTASK 20 - Remaining work to populate live data:\n- Need: PostgreSQL + Redis running (docker compose up or native)\n- Need: POST /api/pipeline/trigger with x-api-key header\n- Need: Verify all 8 routes display real data\n- All frontend display/layout/animation work is complete\n",
         "testStrategy": "Manual verification of all page routes with real data. Check browser console for errors. No 500 errors in server logs.",
         "priority": "high",
         "status": "in-progress",
@@ -534,7 +534,7 @@
           "19"
         ],
         "subtasks": [],
-        "updatedAt": "2026-05-16T21:18:32.216Z"
+        "updatedAt": "2026-05-16T23:05:37.000Z"
       },
       {
         "id": "21",
