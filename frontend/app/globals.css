@@ -2225,8 +2225,8 @@ body {
 }
 
 .calendar-cell {
-  min-height: 100px;
-  padding: 8px;
+  min-height: 72px;
+  padding: 6px 8px;
   border-right: 0.5px solid var(--color-border-tertiary);
   border-bottom: 0.5px solid var(--color-border-tertiary);
   vertical-align: top;
@@ -2325,7 +2325,7 @@ body {
 .calendar-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
 @media (max-width: 640px) {
-  .calendar-cell { min-height: 60px; padding: 4px; }
+  .calendar-cell { min-height: 48px; padding: 4px 6px; }
   .calendar-badge-title { display: none; }
   .calendar-badge-abbr { font-size: 8px; }
   .calendar-month-title { font-size: 16px; }
