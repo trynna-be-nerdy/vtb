@@ -1,6 +1,8 @@
 import { getMeeting } from '@/lib/data'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
+import { Footer } from '@/components/Footer'
+import { ScrollReveal } from '@/components/ScrollReveal'
 import { AgendaItemAccordion } from '@/components/AgendaItemAccordion'
 import { notFound } from 'next/navigation'
 import type { MeetingDetail } from '@/lib/types'
@@ -35,6 +37,8 @@ export default async function MeetingDetailPage({
   return (
     <div className="site">
       <Navbar />
+
+      <ScrollReveal />
 
       <div className="page-layout">
         <Sidebar />
@@ -159,14 +163,7 @@ export default async function MeetingDetailPage({
         </div>
       </div>
 
-      {/* ── Footer ── */}
-      <div className="site-footer">
-        <div className="site-footer-inner">
-          <div className="footer-copy">
-            View the Board · Not affiliated with Loudoun County Government · AI-generated summaries from official public records
-          </div>
-        </div>
-      </div>
+      <Footer />
     </div>
   )
 }
