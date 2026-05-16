@@ -5,13 +5,20 @@ declare global {
   var __redis: Redis | undefined
 }
 
-export const redis =
+const redisInstance =
   globalThis.__redis ??
   new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379/0', {
-    maxRetriesPerRequest: 3,
+    maxRetriesPerRequest: 1,
     enableReadyCheck: false,
     lazyConnect: true,
+    connectTimeout: 2000,
+    commandTimeout: 2000,
   })
+
+// Prevent "unhandled error event" crashes when Redis is unavailable
+redisInstance.on('error', () => {})
+
+export const redis = redisInstance
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.__redis = redis
