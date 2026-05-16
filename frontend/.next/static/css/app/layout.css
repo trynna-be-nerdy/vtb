@@ -1482,27 +1482,24 @@ body {
   padding-top: 54px; /* offset for fixed navbar */
 }
 
-/* ── PAGE LAYOUT (sidebar + main) ── */
+/* ── PAGE LAYOUT (sidebar | content | mirror) ── */
+/* 3-column grid: sidebar and empty right column are identical widths
+   so the centre column is mathematically centred on the page.        */
 .page-layout {
-  display: flex;
-  max-width: 1200px;   /* widened to fit sidebar + content + phantom mirror */
-  margin: 0 auto;
-  align-items: flex-start;
-  min-height: calc(100vh - 54px);
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) 210px;
   gap: 14px;
-  padding: 0 14px;     /* equal left/right edge padding */
-}
-/* Phantom right column — same width as sidebar, keeps content dead-center */
-.page-layout::after {
-  content: '';
-  width: 210px;
-  flex-shrink: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 14px;
+  align-items: start;
+  min-height: calc(100vh - 54px);
 }
 
 /* ── CENTERED CONTAINER ── */
 .site-container {
-  flex: 1;
   min-width: 0;
+  /* sits in column 2; column 3 is empty — mirrors sidebar width */
 }
 
 /* ── NAV ── */
@@ -1681,10 +1678,12 @@ body {
 }
 
 
-/* Hide sidebar on narrow screens */
+/* Narrow screens — collapse to single column */
 @media (max-width: 860px) {
   .sidebar { display: none; }
-  .page-layout::after { display: none; } /* drop phantom too so content fills width */
+  .page-layout {
+    grid-template-columns: 1fr; /* content fills full width */
+  }
 }
 
 /* ── INTRO ── */
