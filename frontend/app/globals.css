@@ -708,9 +708,16 @@ body {
   flex-direction: column;
   gap: 6px;
   cursor: pointer;
+  transition: border-color 0.18s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s;
 }
 .resource-card:hover {
   border-color: var(--color-border-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+}
+.resource-card:active {
+  transform: scale(0.98);
+  box-shadow: none;
 }
 .resource-eyebrow {
   font-size: 10px;
@@ -843,6 +850,8 @@ body {
 }
 .card.resource-card:hover {
   border-color: var(--color-border-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
 }
 
 /* ── EMPTY STATE ── */
