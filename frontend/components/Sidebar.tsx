@@ -20,11 +20,9 @@ const CATEGORIES = [
 ]
 
 const SOURCES = [
-  { label: 'Loudoun County Portal', href: 'https://loudoun.gov/meetings',   external: true },
-  { label: 'LCPS BoardDocs',        href: 'https://lcps.org/boarddocs',     external: true },
-  { label: 'About',                 href: '/about',                         external: false },
-  { label: 'Data sources',          href: '/data-sources',                  external: false },
-  { label: 'AI transparency',       href: '/ai-transparency',               external: false },
+  { label: 'Loudoun County Portal', href: 'https://loudoun.gov/meetings', external: true },
+  { label: 'LCPS BoardDocs',        href: 'https://lcps.org/boarddocs',   external: true },
+  { label: 'About',                 href: '/about',                        external: false },
 ]
 
 export function Sidebar() {
