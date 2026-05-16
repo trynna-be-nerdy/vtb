@@ -95,9 +95,9 @@ export function Navbar() {
         {/* Center: rotating 5-word tagline */}
         <RotatingTagline />
 
-        {/* Right: search pill */}
-        <Link href="/search" className="search-pill">
-          Search by board, topic, or keyword
+        {/* Right: About */}
+        <Link href="/about" className="search-pill">
+          About
         </Link>
       </div>
     </nav>
