@@ -2,5 +2,6 @@
   "/page": "app/page.js",
   "/calendar/page": "app/calendar/page.js",
   "/api/updates/route": "app/api/updates/route.js",
-  "/search/page": "app/search/page.js"
+  "/search/page": "app/search/page.js",
+  "/boards/[slug]/page": "app/boards/[slug]/page.js"
 }
