@@ -131,11 +131,12 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
-/* Rotating tagline — shift left slightly to compensate for the search pill
-   being wider than the logo, which pulls the visual centre leftward. */
+/* Rotating tagline — centred with the main content column.
+   Grid is symmetric (210px sidebar = 210px empty right col + equal page padding)
+   so 50% of nav-inner = exact midpoint of the content body. */
 .nav-tagline {
   position: absolute;
-  left: calc(50% - 24px);
+  left: 50%;
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 500;
