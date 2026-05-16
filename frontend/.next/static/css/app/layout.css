@@ -1564,11 +1564,11 @@ body {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%       { opacity: 0.3; transform: scale(0.7); }
 }
-/* Rotating tagline — layout is now symmetric (sidebar left = phantom right)
-   so the content midpoint equals the nav midpoint: plain 50% works. */
+/* Rotating tagline — shift left slightly to compensate for the search pill
+   being wider than the logo, which pulls the visual centre leftward. */
 .nav-tagline {
   position: absolute;
-  left: 50%;
+  left: calc(50% - 24px);
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 500;
