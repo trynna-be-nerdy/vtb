@@ -11,12 +11,18 @@ const BOARDS = [
 ]
 
 const CATEGORIES = [
-  { slug: 'budget-finance',    label: 'Budget & Finance' },
-  { slug: 'schools-education', label: 'Schools & Education' },
-  { slug: 'zoning-land-use',   label: 'Zoning & Land Use' },
-  { slug: 'transportation',    label: 'Transportation' },
-  { slug: 'public-safety',     label: 'Public Safety' },
-  { slug: 'policy-governance', label: 'Policy & Governance' },
+  { slug: 'budget-finance',       label: 'Budget & Finance' },
+  { slug: 'schools-education',    label: 'Schools & Education' },
+  { slug: 'zoning-land-use',      label: 'Zoning & Land Use' },
+  { slug: 'transportation',       label: 'Transportation' },
+  { slug: 'public-safety',        label: 'Public Safety' },
+  { slug: 'policy-governance',    label: 'Policy & Governance' },
+  { slug: 'school-construction',  label: 'School Construction' },
+  { slug: 'equity-inclusion',     label: 'Equity & Inclusion' },
+  { slug: 'technology',           label: 'Technology' },
+  { slug: 'community-parks',      label: 'Community & Parks' },
+  { slug: 'personnel',            label: 'Personnel' },
+  { slug: 'general',              label: 'General' },
 ]
 
 const SOURCES = [

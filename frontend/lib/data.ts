@@ -162,6 +162,47 @@ export async function getCategoryFeed(slug: string, page: number, limit: number)
   return payload
 }
 
+// ── Calendar ──────────────────────────────────────────────────────────────────
+
+export async function getMeetingsByMonth(year: number, month: number, board?: string | null) {
+  // month is 1-based (1 = January)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const firstDay = `${year}-${pad(month)}-01`
+  // Last day: day 0 of the next month
+  const lastDayDate = new Date(year, month, 0)
+  const lastDay = `${year}-${pad(month)}-${pad(lastDayDate.getDate())}`
+
+  const cacheKey = `meetings:calendar:${year}-${pad(month)}:b=${board ?? 'all'}`
+  const cached = await cacheGet(cacheKey)
+  if (cached) return cached as { meetings: MeetingCalendarItem[] }
+
+  const rows = board
+    ? await sql`
+        SELECT id, title, board_slug, meeting_date, processing_status, total_items
+        FROM meetings
+        WHERE meeting_date >= ${firstDay} AND meeting_date <= ${lastDay}
+          AND board_slug = ${board}
+        ORDER BY meeting_date ASC`
+    : await sql`
+        SELECT id, title, board_slug, meeting_date, processing_status, total_items
+        FROM meetings
+        WHERE meeting_date >= ${firstDay} AND meeting_date <= ${lastDay}
+        ORDER BY meeting_date ASC`
+
+  const payload = { meetings: serializeRows(rows as Record<string, unknown>[]) as MeetingCalendarItem[] }
+  await cacheSet(cacheKey, payload, CACHE_TTL)
+  return payload
+}
+
+export interface MeetingCalendarItem {
+  id: number
+  title: string
+  board_slug: string
+  meeting_date: string
+  processing_status: string
+  total_items: number
+}
+
 // ── Search ────────────────────────────────────────────────────────────────────
 
 export async function searchItems(q: string, page: number, limit: number) {
