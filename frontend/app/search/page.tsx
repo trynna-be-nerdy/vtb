@@ -149,7 +149,7 @@ export default function SearchPage() {
 
         <div className="site-container">
           {/* ── Page header ── */}
-          <div className="search-page-header">
+          <div className="search-page-header" data-reveal>
             <h1 className="search-page-title">Search</h1>
             <p className="search-page-sub">
               Full-text search across all board meetings, agenda items, and decisions.
@@ -157,7 +157,7 @@ export default function SearchPage() {
           </div>
 
           {/* ── Search input ── */}
-          <div className="search-page-input-wrap">
+          <div className="search-page-input-wrap" data-reveal>
             <SearchInput
               value={query}
               onChange={setQuery}
