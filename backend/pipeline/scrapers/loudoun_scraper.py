@@ -46,14 +46,20 @@ class LoudounScraper(BaseScraper):
         return docs
 
     async def _fetch_recent_events(self) -> list[dict[str, Any]]:
+        # Legistar API returns 500 with OData string-filter; use unfiltered endpoint
         url = (
             f"{_API_BASE}/events"
             f"?$top={_RECENT_EVENTS}"
             f"&$orderby=EventDate desc"
-            f"&$filter=EventAgendaStatusName eq 'Final'"
         )
         resp = await self._get(url, json=True)
-        return resp.json()
+        events = resp.json()
+        # Filter client-side: only keep events that have a published agenda
+        return [
+            e for e in events
+            if e.get("EventAgendaStatusName") in ("Final", "Final Revised", "Published")
+            or e.get("EventAgendaFile")
+        ]
 
     async def _process_event(self, event: dict[str, Any]) -> DocumentInfo | None:
         event_id = event.get("EventId")
