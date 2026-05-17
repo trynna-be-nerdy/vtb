@@ -44,7 +44,7 @@ async def run_scrape_cycle() -> None:
 
         for scraper in scrapers:
             try:
-                documents = await scraper.discover()
+                documents = await scraper.discover_documents()
             except Exception:
                 logger.exception("Scraper %s failed during discover", scraper.__class__.__name__)
                 continue
