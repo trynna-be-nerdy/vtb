@@ -76,14 +76,16 @@ async def run_scrape_cycle() -> None:
         logger.info("Scrape cycle complete")
 
 
-def main() -> None:
+async def _run() -> None:
+    import datetime
+
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
         run_scrape_cycle,
         trigger="interval",
         seconds=POLL_INTERVAL_SECONDS,
         id="scrape_cycle",
-        next_run_time=__import__("datetime").datetime.now(),  # run immediately on start
+        next_run_time=datetime.datetime.now(),  # run immediately on start
     )
     scheduler.start()
     logger.info(
@@ -93,21 +95,22 @@ def main() -> None:
         settings.ollama_model,
     )
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
+    stop_event = asyncio.Event()
 
-    def _shutdown(sig, frame):
+    def _shutdown(sig, _frame):
         logger.info("Received signal %s — shutting down", sig)
         scheduler.shutdown(wait=False)
-        loop.stop()
+        loop.call_soon_threadsafe(stop_event.set)
 
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
-    try:
-        loop.run_forever()
-    finally:
-        loop.close()
-        sys.exit(0)
+    await stop_event.wait()
+
+
+def main() -> None:
+    asyncio.run(_run())
 
 
 if __name__ == "__main__":
