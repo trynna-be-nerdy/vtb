@@ -177,6 +177,7 @@ def upgrade() -> None:
     )
 
     # ── search_vector trigger ─────────────────────────────────────────────────
+    # asyncpg requires each statement in its own execute() call
     op.execute("""
         CREATE OR REPLACE FUNCTION update_agenda_search_vector()
         RETURNS trigger LANGUAGE plpgsql AS $$
@@ -189,11 +190,12 @@ def upgrade() -> None:
             );
             RETURN NEW;
         END;
-        $$;
-
+        $$
+    """)
+    op.execute("""
         CREATE TRIGGER trg_agenda_search_vector
             BEFORE INSERT OR UPDATE ON agenda_items
-            FOR EACH ROW EXECUTE FUNCTION update_agenda_search_vector();
+            FOR EACH ROW EXECUTE FUNCTION update_agenda_search_vector()
     """)
 
 
