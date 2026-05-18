@@ -88,6 +88,10 @@ export default async function CalendarPage({
   const nextHref = `/calendar?month=${monthParam(next.y, next.m)}${boardSuffix}`
   const pad = (n: number) => String(n).padStart(2, '0')
 
+  // Year range: earliest data is 2020, cap at current year
+  const currentYear = now.getFullYear()
+  const YEAR_RANGE = Array.from({ length: currentYear - 2020 + 1 }, (_, i) => 2020 + i)
+
   return (
     <div className="site">
       <Navbar />
@@ -104,6 +108,19 @@ export default async function CalendarPage({
               <Link href={prevHref} className="calendar-nav-btn" aria-label="Previous month">←</Link>
               <h1 className="calendar-month-title">{MONTH_NAMES[month - 1]} {year}</h1>
               <Link href={nextHref} className="calendar-nav-btn" aria-label="Next month">→</Link>
+            </div>
+
+            {/* ── Year selector ── */}
+            <div className="calendar-year-selector">
+              {YEAR_RANGE.map(y => (
+                <Link
+                  key={y}
+                  href={`/calendar?month=${monthParam(y, y === currentYear ? month : 1)}${boardSuffix}`}
+                  className={`calendar-year-btn${y === year ? ' calendar-year-btn-active' : ''}`}
+                >
+                  {y}
+                </Link>
+              ))}
             </div>
 
             <div className="calendar-filter-tabs">

@@ -2255,6 +2255,37 @@ body {
 }
 .calendar-nav-btn:hover { border-color: var(--color-text-secondary); background: var(--color-background-tertiary); }
 
+.calendar-year-selector {
+  display: flex;
+  gap: 4px;
+  padding: 10px 0 4px;
+  flex-wrap: wrap;
+}
+.calendar-year-btn {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 0.5px solid var(--color-border-tertiary);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.13s ease, color 0.13s ease, border-color 0.13s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.calendar-year-btn:hover {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-secondary);
+  transform: translateY(-1px);
+}
+.calendar-year-btn-active {
+  background: var(--color-text-primary);
+  color: var(--color-background-primary);
+  border-color: var(--color-text-primary);
+  font-weight: 700;
+}
+.calendar-year-btn-active:hover { transform: none; }
+
 .calendar-filter-tabs {
   display: flex;
   gap: 0;
