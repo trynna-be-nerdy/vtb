@@ -1,9 +1,9 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/boards/[slug]/page": "app/boards/[slug]/page.js",
   "/categories/[slug]/page": "app/categories/[slug]/page.js",
   "/ai-transparency/page": "app/ai-transparency/page.js",
   "/data-sources/page": "app/data-sources/page.js",
   "/meetings/[id]/page": "app/meetings/[id]/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/about/page": "app/about/page.js",
   "/api/updates/route": "app/api/updates/route.js"
 }
