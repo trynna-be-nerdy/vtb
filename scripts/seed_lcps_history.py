@@ -5,6 +5,7 @@ Run: python scripts/seed_lcps_history.py
 """
 
 import asyncio
+from datetime import date
 from backend.db.database import async_session
 from backend.db import models
 from sqlalchemy import text
@@ -942,6 +943,9 @@ async def seed():
 
         for m_data in MEETINGS:
             items = m_data.pop("items", [])
+            # Convert date string to datetime.date object
+            if isinstance(m_data.get("meeting_date"), str):
+                m_data["meeting_date"] = date.fromisoformat(m_data["meeting_date"])
             meeting = models.Meeting(**m_data)
             session.add(meeting)
             await session.flush()  # get meeting.id
