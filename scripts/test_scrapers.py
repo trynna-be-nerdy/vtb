@@ -8,7 +8,7 @@ from backend.pipeline.scrapers.lcps_scraper import LCPSScraper
 
 
 async def main():
-    print("── Loudoun County Scraper ──────────────────────")
+    print("-- Loudoun County Scraper --")
     try:
         docs = await LoudounScraper().discover_documents()
         print(f"Found {len(docs)} documents")
@@ -18,7 +18,7 @@ async def main():
         print(f"ERROR: {e}")
 
     print()
-    print("── LCPS Scraper ────────────────────────────────")
+    print("-- LCPS Scraper --")
     try:
         docs = await LCPSScraper().discover_documents()
         print(f"Found {len(docs)} documents")
