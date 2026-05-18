@@ -142,11 +142,13 @@ export async function getCategoryFeed(slug: string, page: number, limit: number)
   const [countRows, rows] = await Promise.all([
     sql`SELECT COUNT(*)::int AS total FROM agenda_items WHERE primary_category = ${slug}`,
     sql`
-      SELECT id, meeting_id, title, summary, primary_category, secondary_tags, urgency,
-             fiscal_impact, affects_schools, source_pdf_url, page_range, created_at
-      FROM agenda_items
-      WHERE primary_category = ${slug}
-      ORDER BY created_at DESC
+      SELECT a.id, a.meeting_id, a.title, a.summary, a.primary_category, a.secondary_tags,
+             a.urgency, a.fiscal_impact, a.affects_schools, a.source_pdf_url, a.page_range,
+             a.created_at, m.board_slug, m.meeting_date
+      FROM agenda_items a
+      JOIN meetings m ON m.id = a.meeting_id
+      WHERE a.primary_category = ${slug}
+      ORDER BY m.meeting_date DESC, a.id DESC
       LIMIT ${limit} OFFSET ${offset}`,
   ])
 

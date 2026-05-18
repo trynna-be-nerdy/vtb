@@ -20,6 +20,8 @@ export interface AgendaItemCard {
   source_pdf_url: string | null
   page_range: string | null
   created_at: string
+  board_slug?: string
+  meeting_date?: string
 }
 
 export interface AgendaItemDetail extends AgendaItemCard {
