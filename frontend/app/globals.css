@@ -92,6 +92,8 @@ body {
 }
 .nav.hidden {
   top: -54px;
+  opacity: 0;
+  pointer-events: none;
 }
 .nav-inner {
   max-width: 1200px;

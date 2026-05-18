@@ -48,22 +48,34 @@ export function Navbar() {
     const nav = navRef.current
     if (!nav) return
 
+    // Initialise to current scroll position so page-load-mid-scroll doesn't flash
+    lastY.current = window.scrollY
+
     function handleScroll() {
       const currentY      = window.scrollY
       const scrollingDown = currentY > lastY.current
+      const delta         = Math.abs(currentY - lastY.current)
 
-      if (currentY > 8) {
+      // Only act on intentional scrolls (ignore tiny jitter)
+      if (delta < 2) {
+        ticking.current = false
+        return
+      }
+
+      // Shadow once scrolled past top
+      if (currentY > 4) {
         nav!.classList.add('scrolled')
       } else {
         nav!.classList.remove('scrolled')
       }
 
-      if (scrollingDown && currentY > 80 && !isHidden.current) {
-        nav!.style.transition = 'top 0.18s cubic-bezier(0.4, 0, 1, 1)'
+      // Hide on scroll down after 40 px; reveal on any scroll up
+      if (scrollingDown && currentY > 40 && !isHidden.current) {
+        nav!.style.transition = 'top 0.2s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease, box-shadow 0.2s ease'
         nav!.classList.add('hidden')
         isHidden.current = true
       } else if (!scrollingDown && isHidden.current) {
-        nav!.style.transition = 'top 0.42s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        nav!.style.transition = 'top 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, box-shadow 0.3s ease'
         nav!.classList.remove('hidden')
         isHidden.current = false
       }
