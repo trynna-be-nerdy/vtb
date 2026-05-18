@@ -2,12 +2,43 @@
 
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import Link from 'next/link'
 import type { AgendaItemDetail } from '@/lib/types'
 
 const URGENCY_BADGE: Record<string, string> = {
   Significant: 'badge badge-error badge-sm',
   Notable:     'badge badge-warning badge-sm',
   Routine:     'badge badge-ghost badge-sm',
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  'schools-education':  'Schools & Education',
+  'school-construction':'School Construction',
+  'budget-finance':     'Budget & Finance',
+  'transportation':     'Transportation',
+  'zoning-land-use':   'Zoning & Land Use',
+  'public-safety':      'Public Safety',
+  'policy-governance':  'Policy & Governance',
+  'equity-inclusion':   'Equity & Inclusion',
+  'technology':         'Technology',
+  'community-parks':    'Community & Parks',
+  'personnel':          'Personnel',
+  'general':            'General',
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'schools-education':  '#2563eb',
+  'school-construction':'#0891b2',
+  'budget-finance':     '#16a34a',
+  'transportation':     '#d97706',
+  'zoning-land-use':   '#7c3aed',
+  'public-safety':      '#dc2626',
+  'policy-governance':  '#0d9488',
+  'equity-inclusion':   '#db2777',
+  'technology':         '#6366f1',
+  'community-parks':    '#65a30d',
+  'personnel':          '#92400e',
+  'general':            '#71717a',
 }
 
 export function AgendaItemAccordion({ items }: { items: AgendaItemDetail[] }) {
@@ -22,6 +53,9 @@ export function AgendaItemAccordion({ items }: { items: AgendaItemDetail[] }) {
       {items.map((item, i) => {
         const isOpen = openIdx === i
         const badgeCls = URGENCY_BADGE[item.urgency] ?? URGENCY_BADGE.Routine
+        const catLabel = item.primary_category ? (CATEGORY_LABELS[item.primary_category] ?? item.primary_category.replace(/-/g, ' ')) : null
+        const catColor = item.primary_category ? (CATEGORY_COLORS[item.primary_category] ?? '#71717a') : '#71717a'
+        const catSlug = item.primary_category ?? null
 
         return (
           <div key={item.id} className="agenda-item">
@@ -34,6 +68,14 @@ export function AgendaItemAccordion({ items }: { items: AgendaItemDetail[] }) {
                 <span className={badgeCls} style={{ fontSize: 9, padding: '1px 7px', flexShrink: 0 }}>
                   {item.urgency}
                 </span>
+                {catLabel && (
+                  <span
+                    className="agenda-category-tag"
+                    style={{ '--cat-color': catColor } as React.CSSProperties}
+                  >
+                    {catLabel}
+                  </span>
+                )}
                 <span className="agenda-trigger-title">{item.title}</span>
                 {item.fiscal_impact && (
                   <span className="chip chip-green" style={{ fontSize: 9.5, flexShrink: 0 }}>$ Fiscal</span>
@@ -75,14 +117,19 @@ export function AgendaItemAccordion({ items }: { items: AgendaItemDetail[] }) {
                   </div>
                 )}
 
-                {/* Footer: category chip, page ref, source PDF */}
+                {/* Footer: category link, secondary tags, page ref, source PDF */}
                 <div className="agenda-footer">
-                  {item.primary_category && (
-                    <span className="chip chip-gray" style={{ fontSize: 10 }}>
-                      {item.primary_category.replace(/-/g, ' ')}
-                    </span>
+                  {catLabel && catSlug && (
+                    <Link
+                      href={`/categories/${catSlug}`}
+                      className="agenda-category-link"
+                      style={{ '--cat-color': catColor } as React.CSSProperties}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      {catLabel} →
+                    </Link>
                   )}
-                  {item.secondary_tags?.slice(0, 2).map(tag => (
+                  {item.secondary_tags?.slice(0, 3).map(tag => (
                     <span key={tag} className="chip chip-gray" style={{ fontSize: 10 }}>{tag}</span>
                   ))}
                   {item.page_range && (
