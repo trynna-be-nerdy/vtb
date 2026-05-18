@@ -1,8 +1,4 @@
 {
-  "/api/updates/route": "app/api/updates/route.js",
-  "/boards/[slug]/page": "app/boards/[slug]/page.js",
-  "/page": "app/page.js",
-  "/categories/[slug]/page": "app/categories/[slug]/page.js",
-  "/ai-transparency/page": "app/ai-transparency/page.js",
-  "/data-sources/page": "app/data-sources/page.js"
+  "/meetings/[id]/page": "app/meetings/[id]/page.js",
+  "/categories/[slug]/page": "app/categories/[slug]/page.js"
 }
