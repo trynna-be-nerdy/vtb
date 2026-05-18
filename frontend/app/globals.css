@@ -2137,6 +2137,11 @@ body {
 .agenda-item-meeting { font-size: 11px; color: var(--color-text-secondary); }
 .agenda-item-meeting a { color: var(--color-text-info); text-decoration: none; }
 .agenda-item-meeting a:hover { text-decoration: underline; }
+.agenda-item-meta { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--color-text-secondary); }
+.agenda-item-board { font-weight: 600; }
+.agenda-item-date { opacity: 0.8; }
+.agenda-item-meeting-link { font-size: 11px; color: var(--color-text-info); text-decoration: none; margin-left: auto; }
+.agenda-item-meeting-link:hover { text-decoration: underline; }
 
 /* ── INFO PAGES (about, data-sources, ai-transparency, contact) ──────────── */
 .info-page { padding: 24px 28px 48px; margin-top: 0; }
