@@ -1,6 +1,6 @@
 {
-  "/api/updates/route": "app/api/updates/route.js",
-  "/page": "app/page.js",
   "/ai-transparency/page": "app/ai-transparency/page.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/page": "app/page.js",
   "/data-sources/page": "app/data-sources/page.js"
 }
