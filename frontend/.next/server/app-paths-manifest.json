@@ -1,9 +1,9 @@
 {
-  "/page": "app/page.js",
-  "/ai-transparency/page": "app/ai-transparency/page.js",
-  "/categories/[slug]/page": "app/categories/[slug]/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/boards/[slug]/page": "app/boards/[slug]/page.js",
+  "/categories/[slug]/page": "app/categories/[slug]/page.js",
+  "/ai-transparency/page": "app/ai-transparency/page.js",
   "/data-sources/page": "app/data-sources/page.js",
-  "/api/updates/route": "app/api/updates/route.js",
-  "/meetings/[id]/page": "app/meetings/[id]/page.js"
+  "/meetings/[id]/page": "app/meetings/[id]/page.js",
+  "/api/updates/route": "app/api/updates/route.js"
 }
