@@ -1,9 +1,9 @@
 {
-  "/api/updates/route": "app/api/updates/route.js",
   "/meetings/[id]/page": "app/meetings/[id]/page.js",
   "/page": "app/page.js",
-  "/search/page": "app/search/page.js",
-  "/api/search/route": "app/api/search/route.js",
+  "/boards/[slug]/page": "app/boards/[slug]/page.js",
   "/calendar/page": "app/calendar/page.js",
-  "/boards/[slug]/page": "app/boards/[slug]/page.js"
+  "/search/page": "app/search/page.js",
+  "/ai-transparency/page": "app/ai-transparency/page.js",
+  "/api/updates/route": "app/api/updates/route.js"
 }
