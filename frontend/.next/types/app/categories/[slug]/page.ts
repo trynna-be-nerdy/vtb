@@ -1,8 +1,8 @@
-// File: C:\Users\sriva\vtb\frontend\app\search\page.tsx
-import * as entry from '../../../../app/search/page.js'
+// File: C:\Users\sriva\vtb\frontend\app\categories\[slug]\page.tsx
+import * as entry from '../../../../../app/categories/[slug]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../app/search/page.js')
+type TEntry = typeof import('../../../../../app/categories/[slug]/page.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
