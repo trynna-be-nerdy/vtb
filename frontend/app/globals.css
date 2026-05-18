@@ -1521,6 +1521,63 @@ body {
 }
 .agenda-pdf-link:hover { text-decoration: underline; }
 
+/* ── Category tag on accordion trigger row ─────────────────────────────── */
+.agenda-category-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--cat-color, #71717a) 35%, transparent);
+  background: color-mix(in srgb, var(--cat-color, #71717a) 10%, transparent);
+  color: var(--cat-color, #71717a);
+  flex-shrink: 0;
+  transition: background 0.14s ease;
+}
+
+/* ── Category link in expanded footer ──────────────────────────────────── */
+.agenda-category-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--cat-color, #71717a) 40%, transparent);
+  background: color-mix(in srgb, var(--cat-color, #71717a) 12%, transparent);
+  color: var(--cat-color, #71717a);
+  text-decoration: none;
+  transition: background 0.14s ease, transform 0.14s ease;
+}
+.agenda-category-link:hover {
+  background: color-mix(in srgb, var(--cat-color, #71717a) 20%, transparent);
+  transform: translateY(-1px);
+}
+
+/* ── Category pill on item cards (categories page + search) ────────────── */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--cat-color, #71717a) 35%, transparent);
+  background: color-mix(in srgb, var(--cat-color, #71717a) 10%, transparent);
+  color: var(--cat-color, #71717a);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.14s ease;
+}
+.category-pill:hover {
+  background: color-mix(in srgb, var(--cat-color, #71717a) 18%, transparent);
+}
+
 /* Supporting documents */
 .docs-list {
   display: flex;
