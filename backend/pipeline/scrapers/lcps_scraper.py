@@ -130,7 +130,7 @@ class LCPSScraper(BaseScraper):
 
             # Filter to recent full-board meetings (last 2 years)
             from datetime import date as _date
-            cutoff = _date(today := _date.today(), today.year - 2, today.month, today.day)
+            today = _date.today()
             try:
                 cutoff = _date(today.year - 2, today.month, today.day)
             except ValueError:
