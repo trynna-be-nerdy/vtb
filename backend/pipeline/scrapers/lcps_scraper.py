@@ -78,6 +78,7 @@ class LCPSScraper(BaseScraper):
     async def _scrape_via_api(self) -> list[DocumentInfo]:
         """Use BoardDocs internal API to get meeting list, then fetch agendas."""
         docs: list[DocumentInfo] = []
+        meetings_json: list[dict] = []
 
         async with async_playwright() as pw:
             browser = await pw.chromium.launch(headless=True)
@@ -86,21 +87,45 @@ class LCPSScraper(BaseScraper):
             )
             page = await context.new_page()
 
-            # Load the public page first to establish session cookies
+            # Intercept the BD-GetMeetingsList response that fires when MEETINGS is clicked
+            captured: list[dict] = []
+
+            async def handle_response(resp):
+                if "BD-GetMeetingsList" in resp.url and resp.status == 200:
+                    try:
+                        text = await resp.text()
+                        import json as _json
+                        data = _json.loads(text)
+                        if isinstance(data, list):
+                            captured.extend(data)
+                            logger.info("Captured %d meetings from BD API", len(data))
+                    except Exception:
+                        pass
+
+            page.on("response", handle_response)
+
             await page.goto(_BD_PUBLIC, wait_until="networkidle", timeout=30_000)
-            await page.wait_for_timeout(2000)
+            await page.wait_for_timeout(1500)
 
-            # Fetch meeting list via the BoardDocs API (cache-busted)
-            cache_bust = random.random()
-            api_url = f"{_BD_BASE}/BD-GetMeetingsList?open&{cache_bust}"
+            # Click the MEETINGS tab to trigger the API call
+            try:
+                await page.locator("#li-meetings, a:has-text('MEETINGS'), [data-tab='meetings']").first.click(timeout=8000)
+                await page.wait_for_timeout(3000)
+            except Exception:
+                logger.warning("Could not click MEETINGS tab, trying JS click")
+                try:
+                    await page.evaluate("document.querySelector('#li-meetings a, #tab-meetings').click()")
+                    await page.wait_for_timeout(3000)
+                except Exception:
+                    pass
 
-            resp = await page.request.get(api_url, headers={"Referer": _BD_PUBLIC})
-            if resp.status != 200:
-                logger.warning("BD-GetMeetingsList returned %d", resp.status)
+            meetings_json = captured
+            logger.info("Total meetings captured: %d", len(meetings_json))
+
+            if not meetings_json:
+                logger.warning("No meetings captured from BoardDocs API")
                 await browser.close()
                 return []
-
-            meetings_json = await resp.json()
             logger.info("BoardDocs returned %d meeting entries", len(meetings_json))
 
             # Filter to recent full-board meetings (last 2 years)
