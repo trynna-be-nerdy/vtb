@@ -159,7 +159,9 @@ class LoudounScraper(BaseScraper):
                         continue
 
                     board_type = _map_board(mf["name"])
-                    title = f"{mf['name'].split(' ', 1)[1].title()} – {meeting_date.strftime('%B %-d, %Y')}" if ' ' in mf['name'] else mf['name']
+                    day_str = str(meeting_date.day)  # no zero-pad, cross-platform
+                    suffix = mf["name"].split(" ", 1)[1].title() if " " in mf["name"] else mf["name"]
+                    title = f"{suffix} – {meeting_date.strftime('%B')} {day_str}, {meeting_date.year}"
 
                     # Get PDFs inside meeting folder
                     meeting_entries = await _get_folder_entries(page, mf["id"])
